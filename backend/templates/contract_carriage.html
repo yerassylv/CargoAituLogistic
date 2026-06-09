@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Договор перевозки груза</title>
+<style>
+@page {
+  size: A4;
+  margin: 16mm 14mm 18mm 14mm;
+}
+body {
+  font-family: "DejaVu Sans", Arial, sans-serif;
+  font-size: 9.5pt;
+  color: #000;
+  line-height: 1.38;
+}
+/* Предпросмотр в браузере: «лист» A4 по центру; PDF (WeasyPrint, print) — без ограничений */
+.sheet {
+  box-sizing: border-box;
+}
+@media screen {
+  body {
+    margin: 0;
+    padding: 16px;
+    background: #d9d9d9;
+  }
+  .sheet {
+    max-width: 210mm;
+    margin: 0 auto;
+    padding: 14mm 12mm;
+    background: #fff;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.18);
+  }
+}
+@media print {
+  body {
+    margin: 0;
+    padding: 0;
+    background: #fff;
+  }
+  .sheet {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+  }
+}
+.doc-head {
+  margin-bottom: 10px;
+}
+.doc-head .title-pre {
+  font-size: 8pt;
+  color: #666;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+  margin: 0 0 3px 0;
+  text-align: left;
+}
+.doc-head .platform {
+  font-size: 8pt;
+  color: #666;
+  margin: 0 0 10px 0;
+  font-weight: normal;
+  text-align: left;
+}
+.doc-head .main-title {
+  font-size: 12pt;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin: 0 0 4px 0;
+  letter-spacing: 0.3px;
+  color: #000;
+  text-align: center;
+}
+.doc-head .sub-title {
+  font-size: 9pt;
+  margin: 0 0 8px 0;
+  color: #000;
+  text-align: center;
+}
+.doc-head .requisites-line {
+  font-size: 9.5pt;
+  margin: 6px 0 2px 0;
+  text-align: left;
+}
+.doc-head .city-date {
+  font-size: 9.5pt;
+  margin: 0 0 14px 0;
+  text-align: left;
+}
+h2.clause {
+  clear: both;
+  font-size: 10pt;
+  font-weight: bold;
+  margin: 12px 0 6px 0;
+  page-break-after: avoid;
+}
+/* «1.1. Текст…» в одной строке: номер слева, абзац обтекает */
+h3.subclause {
+  float: left;
+  clear: left;
+  margin: 0 0.4em 0 0;
+  padding: 0;
+  font-size: 9.5pt;
+  font-weight: bold;
+  line-height: 1.38;
+  page-break-after: avoid;
+}
+h3.subclause + p {
+  margin: 0 0 6px 0;
+  text-align: justify;
+}
+h3.subclause + p + ul.bullets {
+  clear: both;
+  margin-top: 0;
+}
+p {
+  margin: 4px 0;
+  text-align: justify;
+}
+ul.bullets {
+  margin: 4px 0 8px 0;
+  padding-left: 1.4em;
+}
+ul.bullets li {
+  margin-bottom: 3px;
+}
+.appendix {
+  clear: both;
+  margin-top: 16px;
+  padding-top: 10px;
+  border-top: 1px solid #000;
+  page-break-inside: avoid;
+}
+.appendix h2 {
+  font-size: 10pt;
+  margin-bottom: 8px;
+}
+table.spec {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 8px 0 12px 0;
+  font-size: 9pt;
+}
+table.spec td {
+  border: 1px solid #000;
+  padding: 5px 7px;
+  vertical-align: top;
+}
+table.spec .lbl { font-weight: bold; width: 28%; }
+.requisites-block {
+  clear: both;
+  margin-top: 14px;
+  page-break-inside: avoid;
+}
+.requisites-block table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 6px;
+}
+.requisites-block td {
+  border: 1px solid #000;
+  padding: 6px 8px;
+  vertical-align: top;
+}
+.requisites-block .rlabel { font-weight: bold; width: 22%; }
+.signatures {
+  clear: both;
+  margin-top: 20px;
+  width: 100%;
+}
+.signatures table { width: 100%; border-collapse: collapse; }
+.signatures td {
+  width: 50%;
+  vertical-align: top;
+  padding-top: 28px;
+  border: none;
+}
+.sign-line {
+  border-top: 1px solid #000;
+  margin-top: 36px;
+  padding-top: 4px;
+  font-size: 8.5pt;
+}
+.muted { color: #333; font-size: 8.5pt; }
+</style>
+</head>
+<body>
+
+<div class="sheet">
+
+<div class="doc-head">
+  <p class="title-pre">Договор перевозки груза</p>
+  <p class="platform">Цифровая логистическая платформа «{{ platform_name }}»</p>
+  <p class="main-title">Договор перевозки груза</p>
+  <p class="sub-title">(в рамках цифровой логистической платформы)</p>
+  <p class="requisites-line">№ {{ contract_number }}</p>
+  <p class="city-date">
+    {% if contract_city %}г. {{ contract_city }}{% else %}г. ____________________{% endif %}
+    &nbsp;&nbsp;
+    {% if contract_date_long %}{{ contract_date_long }}{% else %}«___» __________ 20__ г.{% endif %}
+  </p>
+</div>
+
+<h2 class="clause">1. Общие положения</h2>
+<h3 class="subclause">1.1.</h3>
+<p>Настоящий договор перевозки груза (далее — Договор) заключён между:</p>
+<p><strong>Заказчиком</strong> — юридическим лицом, зарегистрированным в соответствии с законодательством Республики Казахстан, сведения о котором указаны в цифровой логистической платформе,</p>
+<p>и&nbsp;<strong>Перевозчиком</strong> — юридическим лицом или индивидуальным предпринимателем, зарегистрированным в соответствии с законодательством Республики Казахстан, сведения о котором указаны в цифровой логистической платформе, совместно именуемыми <strong>Стороны</strong>, а по отдельности — <strong>Сторона</strong>.</p>
+
+<h3 class="subclause">1.2.</h3>
+<p>Договор заключается в рамках использования цифровой логистической платформы (далее — <strong>Платформа</strong>), предназначенной для организации и управления грузовыми перевозками.</p>
+
+<h3 class="subclause">1.3.</h3>
+<p>Настоящий Договор является рамочным и определяет общие правовые, организационные и экономические условия взаимодействия Сторон при осуществлении перевозок грузов.</p>
+
+<h2 class="clause">2. Предмет договора</h2>
+<h3 class="subclause">2.1.</h3>
+<p>Заказчик поручает, а Перевозчик принимает на себя обязательство по перевозке грузов Заказчика автомобильным транспортом на территории Республики Казахстан.</p>
+
+<h3 class="subclause">2.2.</h3>
+<p>Перевозка грузов осуществляется в соответствии с требованиями:</p>
+<ul class="bullets">
+  <li>Гражданского кодекса Республики Казахстан;</li>
+  <li>Закона Республики Казахстан «Об автомобильном транспорте»;</li>
+  <li>Правил перевозок грузов автомобильным транспортом;</li>
+  <li>настоящего Договора.</li>
+</ul>
+
+<h3 class="subclause">2.3.</h3>
+<p>Договор не содержит условий отдельных перевозок. Конкретные параметры перевозок определяются в отдельных документах, оформляемых в рамках настоящего Договора (в том числе в виде заявок и иных документов, сформированных через Платформу).</p>
+
+<h2 class="clause">3. Статус и заверения сторон</h2>
+<h3 class="subclause">3.1.</h3>
+<p>Каждая из Сторон подтверждает, что:</p>
+<ul class="bullets">
+  <li>обладает необходимой правоспособностью и дееспособностью;</li>
+  <li>действует добросовестно и разумно;</li>
+  <li>надлежащим образом исполняет налоговые и иные обязательства;</li>
+  <li>не находится в стадии ликвидации или банкротства.</li>
+</ul>
+
+<h3 class="subclause">3.2.</h3>
+<p>Перевозчик заверяет, что:</p>
+<ul class="bullets">
+  <li>имеет право осуществлять деятельность по перевозке грузов;</li>
+  <li>использует транспортные средства на законных основаниях (собственность, аренда, лизинг);</li>
+  <li>привлекает третьих лиц исключительно на договорной основе и несёт за них ответственность.</li>
+</ul>
+
+<h3 class="subclause">3.3.</h3>
+<p>Заказчик заверяет, что предоставляемая информация о грузе является достоверной и полной.</p>
+
+<h2 class="clause">4. Права и обязанности Перевозчика</h2>
+<h3 class="subclause">4.1.</h3>
+<p>Перевозчик обязуется:</p>
+<ul class="bullets">
+  <li>осуществлять перевозку грузов с соблюдением законодательства Республики Казахстан;</li>
+  <li>обеспечивать исправное техническое состояние транспортных средств;</li>
+  <li>обеспечивать сохранность груза;</li>
+  <li>привлекать квалифицированный персонал;</li>
+  <li>соблюдать требования охраны труда и транспортной безопасности;</li>
+  <li>своевременно информировать Заказчика об обстоятельствах, влияющих на исполнение обязательств.</li>
+</ul>
+
+<h3 class="subclause">4.2.</h3>
+<p>Перевозчик имеет право:</p>
+<ul class="bullets">
+  <li>получать оплату за оказанные услуги;</li>
+  <li>получать от Заказчика необходимую информацию;</li>
+  <li>отказаться от исполнения обязательств при существенном нарушении условий Договора Заказчиком.</li>
+</ul>
+
+<h2 class="clause">5. Права и обязанности Заказчика</h2>
+<h3 class="subclause">5.1.</h3>
+<p>Заказчик обязуется:</p>
+<ul class="bullets">
+  <li>предоставлять Перевозчику достоверную информацию;</li>
+  <li>обеспечивать соблюдение требований законодательства при подготовке груза;</li>
+  <li>своевременно оплачивать услуги Перевозчика.</li>
+</ul>
+
+<h3 class="subclause">5.2.</h3>
+<p>Заказчик имеет право:</p>
+<ul class="bullets">
+  <li>контролировать исполнение обязательств Перевозчиком;</li>
+  <li>предъявлять обоснованные претензии;</li>
+  <li>требовать возмещения убытков в случаях, предусмотренных законодательством.</li>
+</ul>
+
+<h2 class="clause">6. Ответственность сторон</h2>
+<h3 class="subclause">6.1.</h3>
+<p>Стороны несут ответственность за неисполнение или ненадлежащее исполнение обязательств в соответствии с законодательством Республики Казахстан.</p>
+<h3 class="subclause">6.2.</h3>
+<p>Перевозчик несёт ответственность за утрату, недостачу или повреждение груза, произошедшие по его вине.</p>
+<h3 class="subclause">6.3.</h3>
+<p>Перевозчик несёт ответственность за действия своих работников и привлечённых третьих лиц.</p>
+<h3 class="subclause">6.4.</h3>
+<p>Заказчик несёт ответственность за последствия предоставления недостоверной информации.</p>
+
+<h2 class="clause">7. Страхование</h2>
+<h3 class="subclause">7.1.</h3>
+<p>Перевозчик обязан иметь действующее страхование гражданско-правовой ответственности перевозчика.</p>
+<h3 class="subclause">7.2.</h3>
+<p>Дополнительное страхование груза осуществляется по соглашению Сторон.</p>
+
+<h2 class="clause">8. Электронный документооборот и ЭЦП</h2>
+<h3 class="subclause">8.1.</h3>
+<p>Стороны признают юридическую силу электронных документов, оформленных через Платформу.</p>
+<h3 class="subclause">8.2.</h3>
+<p>Документы, подписанные с использованием электронной цифровой подписи, признаются равнозначными документам на бумажном носителе.</p>
+
+<h2 class="clause">9. Конфиденциальность и персональные данные</h2>
+<h3 class="subclause">9.1.</h3>
+<p>Стороны обязуются соблюдать конфиденциальность информации.</p>
+<h3 class="subclause">9.2.</h3>
+<p>Обработка персональных данных осуществляется в соответствии с законодательством Республики Казахстан.</p>
+
+<h2 class="clause">10. Форс-мажор</h2>
+<h3 class="subclause">10.1.</h3>
+<p>Стороны освобождаются от ответственности за неисполнение обязательств вследствие обстоятельств непреодолимой силы.</p>
+<h3 class="subclause">10.2.</h3>
+<p>Сторона обязана уведомить другую Сторону в разумный срок.</p>
+
+<h2 class="clause">11. Разрешение споров</h2>
+<h3 class="subclause">11.1.</h3>
+<p>Все споры разрешаются путём переговоров.</p>
+<h3 class="subclause">11.2.</h3>
+<p>При недостижении соглашения спор подлежит рассмотрению в судах Республики Казахстан.</p>
+
+<h2 class="clause">12. Срок действия договора</h2>
+<h3 class="subclause">12.1.</h3>
+<p>Договор вступает в силу с момента его заключения.</p>
+<h3 class="subclause">12.2.</h3>
+<p>Договор действует до его расторжения по соглашению Сторон.</p>
+
+<h2 class="clause">13. Заключительные положения</h2>
+<h3 class="subclause">13.1.</h3>
+<p>Договор регулируется законодательством Республики Казахстан.</p>
+<h3 class="subclause">13.2.</h3>
+<p>Изменения и дополнения оформляются в письменной форме.</p>
+<h3 class="subclause">13.3.</h3>
+<p>Договор составлен в двух экземплярах, имеющих равную юридическую силу.</p>
+
+<h2 class="clause">14. Реквизиты сторон</h2>
+<div class="requisites-block">
+  <p><strong>Заказчик:</strong></p>
+  <table>
+    <tr><td class="rlabel">Наименование:</td><td>{{ customer_company }}</td></tr>
+    <tr><td class="rlabel">БИН:</td><td>{% if customer_bin %}{{ customer_bin }}{% else %}{{ customer_inn }}{% endif %}</td></tr>
+    <tr><td class="rlabel">Адрес:</td><td>{{ customer_address }}</td></tr>
+  </table>
+  <p style="margin-top:10px;"><strong>Перевозчик:</strong></p>
+  <table>
+    <tr><td class="rlabel">Наименование:</td><td>{{ carrier_company }}</td></tr>
+    <tr><td class="rlabel">БИН/ИИН:</td><td>{% if carrier_bin %}{{ carrier_bin }}{% elif carrier_inn %}{{ carrier_inn }}{% else %}—{% endif %}</td></tr>
+    <tr><td class="rlabel">Адрес:</td><td>{{ carrier_address }}</td></tr>
+  </table>
+</div>
+
+<div class="appendix">
+  <h2 class="clause">Параметры перевозки (заявка на Платформе)</h2>
+  <p class="muted">Конкретные условия отдельной перевозки по настоящему Договору (п. 2.3):</p>
+  <table class="spec">
+    <tr><td class="lbl">Заявка</td><td>№ {{ request_number }} от {{ request_date }}</td></tr>
+    <tr><td class="lbl">Погрузка</td><td>{{ loading_date }} {{ loading_time }} — {{ loading_address }}{% if loading_contact or loading_phone %} ({{ loading_contact }} {{ loading_phone }}){% endif %}</td></tr>
+    <tr><td class="lbl">Выгрузка</td><td>{{ delivery_date }} {{ delivery_time }} — {{ delivery_address }}{% if delivery_contact or delivery_phone %} ({{ delivery_contact }} {{ delivery_phone }}){% endif %}</td></tr>
+    <tr><td class="lbl">Груз</td><td>{{ cargo_name }}; вес {{ cargo_weight }} т; объём {{ cargo_volume }} м³; кузов {{ body_type }}</td></tr>
+    <tr><td class="lbl">Транспорт / водитель</td><td>{{ vehicle_info }}; {{ driver_name }}, {{ driver_phone }}</td></tr>
+    <tr><td class="lbl">Стоимость</td><td>{{ price }} ₸ {% if payment_terms %}({{ payment_terms }}){% endif %}</td></tr>
+  </table>
+</div>
+
+<div class="signatures">
+  <table>
+    <tr>
+      <td>
+        <strong>Заказчик</strong><br>{{ customer_company }}
+        <div class="sign-line">М.П. / подпись</div>
+      </td>
+      <td>
+        <strong>Перевозчик</strong><br>{{ carrier_company }}
+        <div class="sign-line">М.П. / подпись</div>
+      </td>
+    </tr>
+  </table>
+</div>
+
+</div><!-- .sheet -->
+
+</body>
+</html>

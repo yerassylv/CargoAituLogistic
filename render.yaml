@@ -1,0 +1,36 @@
+services:
+  # Backend FastAPI
+  - type: web
+    name: cargoainur-backend
+    runtime: python
+    buildCommand: "cd backend && pip install -r requirements.txt"
+    startCommand: "cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: DATABASE_URL
+        fromDatabase:
+          name: cargoainur-db
+          property: connectionString
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GOOGLE_MAPS_API_KEY
+        sync: false
+      - key: TZ
+        value: Asia/Almaty
+
+  # Frontend static files
+  - type: web
+    name: cargoainur-frontend
+    runtime: static
+    buildCommand: "echo 'No build needed'"
+    staticPublishPath: ./frontend
+    routes:
+      - type: rewrite
+        source: /api/*
+        destination: https://cargoainur-backend.onrender.com/api/*
+
+databases:
+  - name: cargoainur-db
+    databaseName: cargoainur
+    user: cargoainur

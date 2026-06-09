@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+*.egg-info/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Database
+*.db
+*.sqlite
+cargoainur.db
+
+# Certificates (приватные ключи)
+backend/certificates/*.p12
+backend/certificates/*.pfx
+backend/certificates/*.key
+
+# Generated contracts and invoices (пользовательские данные)
+backend/contracts/
+backend/invoices/
+
+# Environment variables
+.env
+.env.local
+backend/.env
+
+# Documentation (необязательно, можно оставить)
+# *.md
+# README.md
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+

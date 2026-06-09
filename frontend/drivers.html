@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Водители — CargoAitu</title>
+  
+  <link rel="stylesheet" href="styles.css?v=31" />
+</head>
+<body class="page-loading">
+
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">CargoAitu</div>
+    <nav class="nav" id="mainNav">
+      <a href="index.html" class="nav-item">Заявки</a>
+      <a href="index.html#organizations" class="nav-item">Организации</a>
+      <a href="index.html#partners" class="nav-item">Партнёры</a>
+    </nav>
+    <div class="header-actions">
+      <div class="search">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M7 12A5 5 0 1 0 7 2a5 5 0 0 0 0 10zM13 13l-3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <input type="text" placeholder="Найти заявку..." />
+      </div>
+      <div id="userHeaderInfo" class="user" style="display: none;">
+        <div class="user-profile-trigger" id="userProfileTrigger">
+          <span class="user-name-main" id="headerUserName">-</span>
+          <span class="user-name-full" id="headerUserFullName">-</span>
+          <svg class="user-caret" width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M2 4L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div id="userProfileDropdown" class="user-profile-dropdown" style="display: none;">
+          <div class="dropdown-header">
+            <div class="dropdown-user-name" id="dropdownUserName">-</div>
+            <div class="dropdown-user-role" id="dropdownUserRole">-</div>
+          </div>
+          <div class="dropdown-menu">
+            <a href="trucks.html" class="dropdown-item">
+              <span>Машины</span>
+            </a>
+            <a href="drivers.html" class="dropdown-item">
+              <span>Водители</span>
+            </a>
+            <a href="messages.html" class="dropdown-item" id="messagesMenuItem">
+              <span>Уведомления</span>
+              <span class="dropdown-badge" id="messagesBadge" style="display: none;">0</span>
+            </a>
+            <a href="index.html" class="dropdown-item" onclick="event.preventDefault(); localStorage.setItem('openPaymentDetailsModal','true'); window.location.href='index.html';">
+              <span>Платёжные реквизиты</span>
+            </a>
+            <a href="egov-company.html" class="dropdown-item" target="_blank" rel="noopener noreferrer">
+              <span>Проверить компанию</span>
+            </a>
+            <div class="dropdown-divider"></div>
+            <a href="#" class="dropdown-item dropdown-item-danger" id="logoutMenuItem">
+              <span>Выйти</span>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div id="headerAuthButtons">
+        <a href="login.html" class="btn-login">Войти</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="main">
+  <div class="content">
+    <div class="drivers-section">
+      <div class="drivers-header">
+        <h1 class="drivers-title">Водители</h1>
+        <button class="btn-create" onclick="openAddDriverModal()">
+          <span class="btn-icon">+</span>
+          Добавить водителя
+        </button>
+      </div>
+      
+      <div class="drivers-search">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M7 12A5 5 0 1 0 7 2a5 5 0 0 0 0 10zM13 13l-3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <input type="text" id="driverSearch" placeholder="ФИО, дата рождения, телефон или табельный" />
+      </div>
+      
+      <div class="table-wrapper">
+        <div class="table-header">
+          <div>ФИО</div>
+          <div>Дата</div>
+          <div>Табельный номер</div>
+          <div>Действия</div>
+        </div>
+        <div id="driversTableBody" class="table-body">
+          <div class="empty">
+            <div class="empty-icon"></div>
+            <div class="empty-title">Нет водителей</div>
+            <div class="empty-text">Добавьте первого водителя</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+
+<div id="addDriverModal" class="modal" style="display: none;">
+  <div class="modal-content modal-large">
+    <div class="modal-header">
+      <h2>Добавление водителя</h2>
+      <button class="modal-close" onclick="closeAddDriverModal()">&times;</button>
+    </div>
+    
+    <form id="addDriverForm" onsubmit="submitDriver(event)">
+      <div class="form-section">
+        <div class="form-section-title">Основная информация</div>
+        <div class="form-grid">
+          <div class="form-field full-width">
+            <label>ФИО *</label>
+            <input type="text" id="driverFullName" required />
+          </div>
+          <div class="form-field">
+            <label>Дата рождения (необязательно)</label>
+            <input type="date" id="driverBirthDate" />
+          </div>
+          <div class="form-field">
+            <label>Табельный номер (необязательно)</label>
+            <input type="text" id="driverPersonnelNumber" />
+          </div>
+          <div class="form-field full-width">
+            <label>Контактный телефон</label>
+            <div style="display: flex; gap: 8px;">
+              <input type="tel" id="driverPhone" style="flex: 1;" />
+              <button type="button" class="btn-outline" style="padding: 8px 16px;">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="form-section">
+        <div class="form-section-title">Паспорт</div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Тип паспорта</label>
+            <select id="driverPassportType">
+              <option value="Казахстан">Казахстан</option>
+              <option value="Иностранный">Иностранный</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Серия</label>
+            <input type="text" id="driverPassportSeries" placeholder="XXXX" />
+          </div>
+          <div class="form-field">
+            <label>Номер</label>
+            <input type="text" id="driverPassportNumber" placeholder="XXXXXX" />
+          </div>
+          <div class="form-field">
+            <label>Дата выдачи</label>
+            <input type="date" id="driverPassportIssueDate" />
+          </div>
+          <div class="form-field full-width">
+            <label>Кем выдан</label>
+            <input type="text" id="driverPassportIssuedBy" />
+          </div>
+          <div class="form-field full-width">
+            <label>Адрес регистрации (необязательно)</label>
+            <input type="text" id="driverRegistrationAddress" />
+          </div>
+        </div>
+      </div>
+      
+      <div class="form-info-box">
+        Внесите данные хотя бы одного документа: «ИНН водителя» или «Водительского удостоверения», чтобы формировать корректные документы по заявкам
+      </div>
+      
+      <div class="form-section">
+        <div class="form-section-title">ИНН водителя</div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label>ИНН водителя</label>
+            <input type="text" id="driverINN" placeholder="123456789100" />
+          </div>
+        </div>
+      </div>
+      
+      <div class="form-section">
+        <div class="form-section-title">Водительское удостоверение</div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Тип</label>
+            <select id="driverLicenseType">
+              <option value="">Выберите тип</option>
+              <option value="Казахстан">Казахстан</option>
+              <option value="Международное">Международное</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Серия</label>
+            <input type="text" id="driverLicenseSeries" />
+          </div>
+          <div class="form-field">
+            <label>Номер</label>
+            <input type="text" id="driverLicenseNumber" />
+          </div>
+          <div class="form-field">
+            <label>Дата выдачи</label>
+            <input type="date" id="driverLicenseIssueDate" />
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" onclick="closeAddDriverModal()">Отменить</button>
+        <button type="submit" class="btn-login">Добавить</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<div id="viewDriverModal" class="modal" style="display: none;">
+  <div class="modal-content modal-large">
+    <div class="modal-header">
+      <h2>Информация о водителе</h2>
+      <button class="modal-close" onclick="closeViewDriverModal()">&times;</button>
+    </div>
+    <div class="modal-body" id="viewDriverContent" style="padding: 24px;">
+      <div style="text-align: center; padding: 20px;">
+        <div class="spinner"></div>
+        <p>Загрузка данных...</p>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary" onclick="closeViewDriverModal()">Закрыть</button>
+      <button type="button" class="btn-login" id="editFromViewBtn" onclick="editFromView()">Редактировать</button>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal" id="logoutConfirmModal" style="display: none;">
+  <div class="modal-content modal-content-sm">
+    <div class="modal-header">
+      <h2>Подтверждение выхода</h2>
+      <button class="modal-close" onclick="closeLogoutConfirmModal()">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p>Вы уверены, что хотите выйти из системы?</p>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary" onclick="closeLogoutConfirmModal()">Отмена</button>
+      <button type="button" class="btn-danger" id="confirmLogoutBtn">Выйти</button>
+    </div>
+  </div>
+</div>
+
+<script src="page-transitions.js?v=1"></script>
+<script src="script.js?v=4"></script>
+<script src="toast.js?v=1"></script>
+<script src="notifications.js?v=6"></script>
+<script src="drivers.js?v=3"></script>
+</body>
+</html>
+

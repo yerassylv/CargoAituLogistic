@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация - CargoAitu</title>
+    
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h1>CargoAitu</h1>
+                    <p class="subtitle">Регистрация через ЭЦП</p>
+                </div>
+                <div>
+                    <a href="index.html" class="btn btn-secondary" style="text-decoration: none;">← На главную</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="registration-section">
+            <h2>Регистрация через ЭЦП</h2>
+            <p class="section-description">
+                Загрузите файл сертификата ЭЦП. Все данные будут автоматически извлечены из сертификата.
+            </p>
+
+            
+            <div id="fileStep" class="form-step">
+                <form id="certificateUploadForm" class="registration-form">
+                    <div class="form-group">
+                        <label for="ecpCertificate">Сертификат ЭЦП *</label>
+                        <input type="file" id="ecpCertificate" name="ecpCertificate" required 
+                               accept=".p12,.pfx,.cer,.crt,.pem">
+                        <small class="file-hint">
+                            Поддерживаемые форматы: .p12, .pfx, .cer, .crt, .pem (максимум 5MB)
+                        </small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="certificatePassword">Пароль от сертификата (если требуется)</label>
+                        <input type="password" id="certificatePassword" name="certificatePassword" 
+                               placeholder="Введите пароль, если сертификат защищен">
+                        <small class="file-hint">
+                            Оставьте пустым, если сертификат не защищен паролем
+                        </small>
+                    </div>
+
+                    <div id="uploadMessage" class="form-message"></div>
+
+                    <button type="submit" class="submit-btn" id="extractBtn">
+                        <span id="extractText">Извлечь данные из сертификата</span>
+                        <span id="extractLoader" class="loader" style="display: none;"></span>
+                    </button>
+                </form>
+            </div>
+
+            
+            <div id="reviewStep" class="form-step" style="display: none;">
+                <h3>Проверьте извлеченные данные:</h3>
+                <div id="extractedData" class="extracted-data"></div>
+                
+                <div id="reviewMessage" class="form-message"></div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="backBtn">Назад</button>
+                    <button type="button" class="btn btn-primary" id="confirmBtn">
+                        <span id="confirmText">Подтвердить регистрацию</span>
+                        <span id="confirmLoader" class="loader" style="display: none;"></span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-footer">
+                <p>Уже зарегистрированы? <a href="index.html">Вернуться на главную</a></p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 CargoAitu. Дипломная работа.</p>
+        </div>
+    </footer>
+
+    <script src="register.js?v=2"></script>
+</body>
+</html>

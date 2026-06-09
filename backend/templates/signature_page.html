@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Сведения о применении ЭЦП — {{ document_id }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 15mm 13mm 16mm 13mm;
+        }
+
+        * { box-sizing: border-box; }
+
+        html {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "DejaVu Sans", "Liberation Sans", "Arial", sans-serif;
+            font-size: 10pt;
+            line-height: 1.45;
+            color: #111111;
+            background: #ffffff;
+        }
+
+        /* Просмотр в браузере: лист A4 по центру (не влияет на PDF при @media print) */
+        @media screen {
+            html {
+                background: #b0b0b0;
+                min-height: 100%;
+            }
+            body {
+                background: #b0b0b0;
+                padding: 20px 12px 28px;
+            }
+            .a4-sheet {
+                width: 210mm;
+                max-width: 100%;
+                min-height: 297mm;
+                margin: 0 auto;
+                padding: 15mm 13mm 16mm 13mm;
+                background: #ffffff;
+                box-shadow: 0 4px 24px rgba(0, 0, 0, 0.22), 0 0 1px rgba(0, 0, 0, 0.15);
+            }
+        }
+
+        @media print {
+            html {
+                background: #ffffff !important;
+            }
+            body {
+                background: #ffffff !important;
+                padding: 0 !important;
+            }
+            .a4-sheet {
+                width: auto !important;
+                max-width: none !important;
+                min-height: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                box-shadow: none !important;
+                background: transparent !important;
+            }
+        }
+
+        /* Верх: система | реестровый номер + тонкий разделитель */
+        .rail {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 8.5pt;
+            color: #555555;
+            margin-bottom: 12pt;
+            padding-bottom: 8pt;
+            border-bottom: 1pt solid #cccccc;
+        }
+
+        .rail td {
+            vertical-align: bottom;
+            padding: 0;
+        }
+
+        .rail-left {
+            text-align: left;
+            width: 55%;
+        }
+
+        .rail-right {
+            text-align: right;
+        }
+
+        .rail strong {
+            color: #000000;
+            font-weight: 600;
+        }
+
+        .rail-mono {
+            font-family: "DejaVu Sans Mono", "Liberation Mono", monospace;
+            font-size: 8.5pt;
+            color: #000000;
+            letter-spacing: 0.02em;
+        }
+
+        .rail-label {
+            display: block;
+            font-size: 7.5pt;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #666666;
+            margin-bottom: 2pt;
+        }
+
+        /* Заголовок */
+        .hero {
+            margin-bottom: 14pt;
+        }
+
+        .hero-rule {
+            width: 32pt;
+            height: 2.5pt;
+            background: #153e75;
+            margin-bottom: 10pt;
+        }
+
+        .hero-title {
+            font-size: 14pt;
+            font-weight: 700;
+            line-height: 1.25;
+            margin: 0 0 8pt 0;
+            color: #000000;
+        }
+
+        .hero-lead {
+            font-size: 9pt;
+            line-height: 1.5;
+            color: #444444;
+            margin: 0 0 8pt 0;
+            text-align: justify;
+        }
+
+        .hero-meta {
+            font-size: 8.5pt;
+            color: #555555;
+        }
+
+        .hero-meta b {
+            color: #000000;
+            font-weight: 600;
+        }
+
+        /* Секции */
+        .sec {
+            margin: 0 0 12pt 0;
+            page-break-inside: avoid;
+        }
+
+        .sec-head {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 6pt;
+            padding-bottom: 4pt;
+            border-bottom: 1pt solid #000000;
+        }
+
+        .sec-head td {
+            vertical-align: baseline;
+            padding: 0;
+        }
+
+        .sec-num {
+            width: 20pt;
+            font-size: 11pt;
+            font-weight: 700;
+            color: #153e75;
+        }
+
+        .sec-title {
+            font-size: 9pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #000000;
+        }
+
+        /* Строки данных */
+        .rows {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9.5pt;
+        }
+
+        .rows tr td {
+            border-bottom: 0.35pt solid #bbbbbb;
+            padding: 7pt 4pt 7pt 0;
+            vertical-align: top;
+        }
+
+        .rows tr:last-child td {
+            border-bottom: 0.5pt solid #000000;
+        }
+
+        .rows .k {
+            width: 38%;
+            font-weight: 600;
+            color: #111111;
+            padding-right: 10pt;
+        }
+
+        .rows .v {
+            color: #111111;
+            text-align: left;
+        }
+
+        .mono-val {
+            font-family: "DejaVu Sans Mono", "Liberation Mono", monospace;
+            font-size: 9pt;
+            letter-spacing: 0.02em;
+        }
+
+        /* Блок верификации */
+        .verify-wrap {
+            border: 1pt solid #000000;
+            page-break-inside: avoid;
+        }
+
+        .verify-cap {
+            background: #f2f2f2;
+            border-bottom: 1pt solid #000000;
+            padding: 6pt 8pt;
+            font-size: 8pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: #153e75;
+        }
+
+        .verify-grid {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        .verify-grid td {
+            vertical-align: top;
+            padding: 9pt 8pt;
+        }
+
+        .verify-main {
+            border-right: 1pt solid #cccccc;
+        }
+
+        .verify-badge {
+            font-size: 8pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #333333;
+            margin: 0 0 6pt 0;
+        }
+
+        .verify-note {
+            font-size: 8.5pt;
+            line-height: 1.45;
+            text-align: justify;
+            color: #222222;
+            margin: 0 0 10pt 0;
+        }
+
+        .verify-id-row {
+            margin-bottom: 8pt;
+            padding: 6pt 0;
+            border-top: 0.35pt solid #bbbbbb;
+            border-bottom: 0.35pt solid #bbbbbb;
+        }
+
+        .verify-id-label {
+            font-size: 7.5pt;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #666666;
+            margin-bottom: 2pt;
+        }
+
+        .verify-id-value {
+            font-family: "DejaVu Sans Mono", "Liberation Mono", monospace;
+            font-size: 8pt;
+            color: #000000;
+            word-break: break-all;
+        }
+
+        .verify-integrity {
+            margin-top: 8pt;
+        }
+
+        .verify-integrity .lbl {
+            font-size: 7.5pt;
+            color: #444444;
+            margin-bottom: 3pt;
+        }
+
+        .hash-box {
+            font-family: "DejaVu Sans Mono", "Liberation Mono", monospace;
+            font-size: 6.75pt;
+            line-height: 1.35;
+            color: #111111;
+            word-break: break-all;
+            padding: 5pt 6pt;
+            border: 0.5pt solid #999999;
+            background: #fafafa;
+        }
+
+        .verify-aside {
+            width: 118pt;
+            text-align: center;
+            background: #fafafa;
+        }
+
+        .verify-aside-title {
+            font-size: 7.5pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #444444;
+            margin: 0 0 6pt 0;
+        }
+
+        .verify-aside img {
+            width: 96pt;
+            height: 96pt;
+            display: block;
+            margin: 0 auto 6pt auto;
+            border: 1pt solid #000000;
+            padding: 3pt;
+            background: #ffffff;
+        }
+
+        .verify-seal-text {
+            font-size: 7.5pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #000000;
+            margin: 0 0 4pt 0;
+        }
+
+        .verify-caption {
+            font-size: 7pt;
+            line-height: 1.4;
+            color: #555555;
+            text-align: left;
+            margin: 0;
+        }
+
+        .verify-foot {
+            font-size: 6.5pt;
+            color: #666666;
+            text-align: center;
+            margin-top: 6pt;
+            font-style: italic;
+        }
+
+        /* Статус */
+        .status {
+            margin-top: 12pt;
+            page-break-inside: avoid;
+            padding: 9pt 10pt;
+            border-left: 3pt solid #153e75;
+            background: #f5f5f5;
+        }
+
+        .status-k {
+            font-size: 7.5pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #555555;
+            margin-bottom: 5pt;
+        }
+
+        .status-v {
+            font-size: 10pt;
+            font-weight: 700;
+            margin: 0 0 6pt 0;
+            color: #000000;
+        }
+
+        .status-law {
+            font-size: 8.5pt;
+            line-height: 1.5;
+            color: #222222;
+            text-align: justify;
+            margin: 0;
+        }
+
+        /* Машиночитаемый блок */
+        .machine {
+            margin-top: 12pt;
+            padding: 8pt 9pt;
+            border: 0.5pt dashed #888888;
+            background: #ffffff;
+            page-break-inside: avoid;
+        }
+
+        .machine-cap {
+            font-size: 7pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #666666;
+            margin: 0 0 6pt 0;
+            padding-bottom: 4pt;
+            border-bottom: 0.35pt solid #cccccc;
+        }
+
+        .machine table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 7pt;
+            font-family: "DejaVu Sans Mono", "Liberation Mono", monospace;
+            color: #333333;
+        }
+
+        .machine td {
+            padding: 3pt 6pt 3pt 0;
+            vertical-align: top;
+        }
+
+        .machine .mk {
+            width: 30%;
+            color: #666666;
+            font-family: "DejaVu Sans", "Liberation Sans", sans-serif;
+            font-size: 7pt;
+            font-weight: 600;
+        }
+
+        .machine .mv {
+            word-break: break-all;
+            color: #000000;
+        }
+    </style>
+</head>
+<body>
+
+<div class="a4-sheet">
+
+    <table class="rail">
+        <tr>
+            <td class="rail-left">
+                Информационная система: <strong>{{ platform_name }}</strong>
+            </td>
+            <td class="rail-right">
+                <span class="rail-label">Реестровый номер</span>
+                <span class="rail-mono">{{ document_id }}</span>
+            </td>
+        </tr>
+    </table>
+
+    <header class="hero">
+        <div class="hero-rule"></div>
+        <h1 class="hero-title">Сведения о применении электронной цифровой подписи</h1>
+        <p class="hero-lead">Настоящий документ подтверждает факт применения электронной цифровой подписи (ЭЦП) к электронному документу в соответствии с законодательством Республики Казахстан и регламентом {{ platform_name }}. Используется при контроле, сверке с журналами операций и предъявлении сведений контрагентам.</p>
+        <p class="hero-meta">Дата и время фиксации записи о подписи: <b>{{ signed_date }}</b> (местное время, данные системы).</p>
+    </header>
+
+    <section class="sec">
+        <table class="sec-head">
+            <tr>
+                <td class="sec-num">1</td>
+                <td class="sec-title">Документ и учётные реквизиты</td>
+            </tr>
+        </table>
+        <table class="rows">
+            <tr>
+                <td class="k">Тип электронного документа</td>
+                <td class="v">{{ document_type_label }}</td>
+            </tr>
+            <tr>
+                <td class="k">Идентификатор записи в системе</td>
+                <td class="v"><span class="mono-val">{{ internal_document_id }}</span></td>
+            </tr>
+            <tr>
+                <td class="k">Реестровый номер настоящего листа</td>
+                <td class="v"><span class="mono-val">{{ document_id }}</span></td>
+            </tr>
+        </table>
+    </section>
+
+    <section class="sec">
+        <table class="sec-head">
+            <tr>
+                <td class="sec-num">2</td>
+                <td class="sec-title">Сведения о подписанте</td>
+            </tr>
+        </table>
+        <table class="rows">
+            <tr>
+                <td class="k">Подписант</td>
+                <td class="v">{{ signer_name }}</td>
+            </tr>
+            {% if signer_iin %}
+            <tr>
+                <td class="k">ИИН</td>
+                <td class="v"><span class="mono-val">{{ signer_iin }}</span></td>
+            </tr>
+            {% endif %}
+            <tr>
+                <td class="k">Дата и время подписания</td>
+                <td class="v">{{ signed_date }}</td>
+            </tr>
+        </table>
+    </section>
+
+    <section class="sec">
+        <table class="sec-head">
+            <tr>
+                <td class="sec-num">3</td>
+                <td class="sec-title">Модуль верификации и контроля подлинности</td>
+            </tr>
+        </table>
+        <div class="verify-wrap">
+            <div class="verify-cap">Электронная отметка проверки · QR</div>
+            <table class="verify-grid">
+                <tr>
+                    <td class="verify-main">
+                        <p class="verify-badge">Назначение</p>
+                        <p class="verify-note">Машиночитаемый код (QR) соответствует полезной нагрузке, зафиксированной при регистрации подписи. При проверке подлинности результаты автоматического считывания следует сопоставить с учётными данными {{ platform_name }}.</p>
+                        <div class="verify-id-row">
+                            <div class="verify-id-label">Verification ID (идентификатор проверки)</div>
+                            <div class="verify-id-value">{{ document_id }}</div>
+                        </div>
+                        <p class="verify-badge">Для проверки подлинности</p>
+                        <p class="verify-note">Сохраните настоящий лист вместе с подписанным документом. Несовпадение контрольной суммы или содержимого QR-кода с записями системы является основанием для дополнительной проверки юридической и технической службой.</p>
+                        <div class="verify-integrity">
+                            <div class="lbl">Класс записи в полезной нагрузке: <strong>{{ qr_record_type_label }}</strong></div>
+                            <div class="lbl">Контрольная сумма полезной нагрузки (SHA-256, hex, группировка по 8 символов):</div>
+                            <div class="hash-box">{{ verification_fingerprint }}</div>
+                        </div>
+                    </td>
+                    <td class="verify-aside">
+                        <p class="verify-aside-title">Графический токен</p>
+                        <img src="{{ qr_code_data_uri }}" alt="QR верификации" />
+                        <p class="verify-seal-text">Документ защищён ЭЦП</p>
+                        <p class="verify-caption">Отсканируйте код уполномоченным программным средством. Изображение не является подписью и не заменяет электронный оригинал.</p>
+                        <p class="verify-foot">Лист сформирован автоматически · без оттиска печати</p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </section>
+
+    <div class="status">
+        <div class="status-k">Регистрационный статус</div>
+        <p class="status-v">ЭЦП наложена и зарегистрирована</p>
+        <p class="status-law">Фиксация подписи в {{ platform_name }} выполнена с соблюдением требований к электронному документообороту. Юридическая сила электронного документа определяется законодательством Республики Казахстан о электронном документе и электронной цифровой подписи.</p>
+    </div>
+
+    <div class="machine">
+        <p class="machine-cap">Служебный технический блок (не подлежит изменению вручную)</p>
+        <table>
+            <tr>
+                <td class="mk">document_hash</td>
+                <td class="mv">{{ document_hash }}</td>
+            </tr>
+            <tr>
+                <td class="mk">transaction_id</td>
+                <td class="mv">{{ transaction_id }}</td>
+            </tr>
+            <tr>
+                <td class="mk">system_id</td>
+                <td class="mv">{{ system_id }}</td>
+            </tr>
+        </table>
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Заявка на перевозку груза</title>
+<style>
+@page { size: A4; margin: 14mm 12mm 16mm 12mm; }
+body {
+  font-family: "DejaVu Sans", Arial, sans-serif;
+  font-size: 9.5pt;
+  line-height: 1.35;
+  color: #000;
+}
+.sheet { box-sizing: border-box; }
+@media screen {
+  body { margin: 0; padding: 16px; background: #d9d9d9; }
+  .sheet {
+    max-width: 210mm;
+    margin: 0 auto;
+    padding: 12mm 10mm;
+    background: #fff;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.18);
+  }
+}
+@media print {
+  body { margin: 0; padding: 0; background: #fff; }
+  .sheet { max-width: none; margin: 0; padding: 0; box-shadow: none; }
+}
+.doc-head .frame-title {
+  font-size: 8pt;
+  color: #666;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin: 0 0 2px 0;
+  text-align: left;
+}
+.doc-head .platform {
+  font-size: 8pt;
+  color: #666;
+  margin: 0 0 10px 0;
+  text-align: left;
+}
+.doc-head .main-title {
+  font-size: 13pt;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-align: center;
+  margin: 0 0 6px 0;
+  letter-spacing: 0.4px;
+}
+.doc-head .meta-line { font-size: 9.5pt; margin: 4px 0; text-align: left; }
+.doc-head .frame-ref { font-size: 9.5pt; margin: 8px 0 14px 0; text-align: justify; }
+h2.section {
+  font-size: 10pt;
+  font-weight: bold;
+  margin: 14px 0 8px 0;
+  page-break-after: avoid;
+}
+h3.sub {
+  font-size: 9.8pt;
+  font-weight: bold;
+  margin: 10px 0 6px 0;
+}
+.row {
+  display: table;
+  width: 100%;
+  margin-bottom: 6px;
+}
+.row .lbl {
+  display: table-cell;
+  white-space: nowrap;
+  vertical-align: bottom;
+  padding: 0 8px 2px 0;
+}
+.row .val {
+  display: table-cell;
+  width: 100%;
+  vertical-align: bottom;
+  border-bottom: 1px solid #000;
+  padding: 2px 4px 1px 4px;
+  min-height: 1.3em;
+}
+.party-h { font-weight: bold; margin: 10px 0 6px 0; }
+.city-line { margin: 8px 0; min-height: 1.2em; border-bottom: 1px solid #000; max-width: 8em; }
+.cb { font-family: "DejaVu Sans", sans-serif; margin-right: 4px; }
+p { margin: 5px 0; text-align: justify; }
+ul.bullets { margin: 6px 0 8px 1.2em; padding: 0; }
+ul.bullets li { margin-bottom: 4px; }
+.subnum { margin: 6px 0; text-align: justify; }
+.repeat-head {
+  margin: 16px 0 12px 0;
+  padding-top: 8px;
+  border-top: 1px solid #ccc;
+  page-break-inside: avoid;
+}
+.sign-grid {
+  display: table;
+  width: 100%;
+  margin-top: 18px;
+}
+.sign-col {
+  display: table-cell;
+  width: 50%;
+  vertical-align: top;
+  padding-right: 12px;
+}
+.sign-block .lbl { font-weight: 600; margin-top: 10px; }
+.sign-line {
+  border-bottom: 1px solid #000;
+  min-height: 20px;
+  margin-top: 4px;
+}
+.appendix-note {
+  font-size: 8.5pt;
+  color: #333;
+  margin-top: 12px;
+}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+<div class="doc-head">
+  <p class="frame-title">Договор перевозки груза</p>
+  <p class="platform">Цифровая логистическая платформа «{{ platform_name }}»</p>
+  <div class="main-title">Заявка на перевозку груза</div>
+  <p class="meta-line">№ {{ request_number }}</p>
+  <p class="frame-ref">в рамках Договора перевозки груза № {{ contract_frame_number }}{% if contract_frame_date_long %} от {{ contract_frame_date_long }}{% else %} от «___» __________ ____ г.{% endif %}</p>
+</div>
+
+<h2 class="section">1. Сведения о сторонах</h2>
+<p class="party-h">Заказчик:</p>
+<div class="row"><span class="lbl">Наименование:</span><span class="val">{{ customer_company }}</span></div>
+<div class="row"><span class="lbl">БИН:</span><span class="val">{{ customer_bin }}</span></div>
+<div class="row"><span class="lbl">Контактное лицо:</span><span class="val">{{ customer_contact }}</span></div>
+<div class="row"><span class="lbl">Телефон:</span><span class="val">{{ customer_phone }}</span></div>
+<div class="row"><span class="lbl">Электронная почта:</span><span class="val">{{ customer_email }}</span></div>
+<p>г.</p>
+<div class="city-line"></div>
+
+<p class="party-h">Перевозчик:</p>
+<div class="row"><span class="lbl">Наименование:</span><span class="val">{{ carrier_company }}</span></div>
+<div class="row"><span class="lbl">БИН/ИИН:</span><span class="val">{{ carrier_bin_iin }}</span></div>
+<div class="row"><span class="lbl">Контактное лицо:</span><span class="val">{{ carrier_contact }}</span></div>
+<div class="row"><span class="lbl">Телефон:</span><span class="val">{{ carrier_phone }}</span></div>
+<div class="row"><span class="lbl">Электронная почта:</span><span class="val">{{ carrier_email }}</span></div>
+
+<h2 class="section">2. Маршрут и сроки перевозки</h2>
+<h3 class="sub">2.1. Погрузка</h3>
+<div class="row"><span class="lbl">Адрес погрузки:</span><span class="val">{{ loading_address }}</span></div>
+<div class="row"><span class="lbl">Дата погрузки:</span><span class="val">{% if loading_date_long %}{{ loading_date_long }}{% else %}«___» __________ 20__ г.{% endif %}</span></div>
+<p>Время погрузки: с <span style="border-bottom:1px solid #000;padding:0 8px;">{{ loading_time_from }}</span> до <span style="border-bottom:1px solid #000;padding:0 8px;">{{ loading_time_to }}</span></p>
+<div class="row"><span class="lbl">Контактное лицо на погрузке / телефон:</span><span class="val">{{ loading_contact }} {{ loading_phone }}</span></div>
+
+<h3 class="sub">2.2. Выгрузка</h3>
+<div class="row"><span class="lbl">Адрес выгрузки:</span><span class="val">{{ delivery_address }}</span></div>
+<div class="row"><span class="lbl">Дата выгрузки:</span><span class="val">{% if delivery_date_long %}{{ delivery_date_long }}{% else %}«___» __________ 20__ г.{% endif %}</span></div>
+<p>Время выгрузки: с <span style="border-bottom:1px solid #000;padding:0 8px;">{{ delivery_time_from }}</span> до <span style="border-bottom:1px solid #000;padding:0 8px;">{{ delivery_time_to }}</span></p>
+<div class="row"><span class="lbl">Контактное лицо на выгрузке / телефон:</span><span class="val">{{ delivery_contact }} {{ delivery_phone }}</span></div>
+
+<h2 class="section">3. Информация о грузе</h2>
+<div class="row"><span class="lbl">Наименование груза:</span><span class="val">{{ cargo_name }}</span></div>
+<div class="row"><span class="lbl">Вес (брутто), кг:</span><span class="val">{{ cargo_weight_kg }}</span></div>
+<div class="row"><span class="lbl">Объём, м³:</span><span class="val">{{ cargo_volume }}</span></div>
+<div class="row"><span class="lbl">Количество мест:</span><span class="val">{{ cargo_places }}</span></div>
+<p><strong>Характер груза:</strong></p>
+<p><span class="cb">{% if cargo_normal %}☑{% else %}☐{% endif %}</span> обычный
+&nbsp;&nbsp;<span class="cb">{% if cargo_fragile %}☑{% else %}☐{% endif %}</span> хрупкий
+&nbsp;&nbsp;<span class="cb">{% if cargo_oversized %}☑{% else %}☐{% endif %}</span> негабаритный
+&nbsp;&nbsp;<span class="cb">{% if cargo_temp %}☑{% else %}☐{% endif %}</span> требующий температурного режима</p>
+<div class="row"><span class="lbl">Температурный режим (при наличии):</span><span class="val">{{ temperature_regime }}</span></div>
+
+<div class="repeat-head">
+  <p class="frame-title">Договор перевозки груза</p>
+  <p class="platform">Цифровая логистическая платформа «{{ platform_name }}»</p>
+</div>
+
+<h2 class="section">4. Требования к транспортному средству и водителю</h2>
+<div class="row"><span class="lbl"><strong>4.1.</strong> Тип транспортного средства:</span><span class="val">{{ vehicle_type_display }}</span></div>
+<p><strong>4.2. Тип кузова:</strong></p>
+<p>
+<span class="cb">{% if body_tent %}☑{% else %}☐{% endif %}</span> тент
+&nbsp;&nbsp;<span class="cb">{% if body_isotherm %}☑{% else %}☐{% endif %}</span> изотерм
+&nbsp;&nbsp;<span class="cb">{% if body_reefer %}☑{% else %}☐{% endif %}</span> рефрижератор
+&nbsp;&nbsp;<span class="cb">{% if body_other %}☑{% else %}☐{% endif %}</span> иной: <span style="border-bottom:1px solid #000;min-width:12em;display:inline-block;">{{ body_other_text }}</span>
+</p>
+<p><strong>4.3. Обязательные требования:</strong></p>
+<ul class="bullets">
+  <li>наличие исправных креплений и оборудования для фиксации груза;</li>
+  <li>технически исправное состояние транспортного средства;</li>
+  <li>соблюдение санитарных требований (при необходимости);</li>
+  <li>наличие у водителя действующего водительского удостоверения и документов на ТС.</li>
+</ul>
+<p class="subnum"><strong>4.4.</strong> Перевозчик подтверждает, что транспортное средство и водитель соответствуют всем требованиям, указанным в настоящей Заявке.</p>
+
+{% if vehicle_info or driver_name %}
+<p class="appendix-note"><strong>Данные для исполнения (при назначении):</strong> ТС: {{ vehicle_info or "—" }}; водитель: {{ driver_name or "—" }}{% if driver_phone %}, тел. {{ driver_phone }}{% endif %}.</p>
+{% endif %}
+
+<h2 class="section">5. Стоимость перевозки и расчёты</h2>
+<div class="row"><span class="lbl">Стоимость перевозки:</span><span class="val">{% if price %}{{ price }}{% else %}—{% endif %} тенге</span></div>
+<p>НДС:
+<span class="cb">{% if vat_included %}☑{% else %}☐{% endif %}</span> включён
+<span class="cb">{% if vat_not_included %}☑{% else %}☐{% endif %}</span> не включён</p>
+<p>Основание для оплаты: акт выполненных работ</p>
+<p>Срок оплаты: в соответствии с Договором перевозки груза.</p>
+{% if payment_terms %}<p>Дополнительно: {{ payment_terms }}</p>{% endif %}
+
+<h2 class="section">6. Ответственность и штрафные санкции</h2>
+<p class="subnum"><strong>6.1. Неподача транспортного средства</strong></p>
+<p>Перевозчик несёт ответственность за неподачу транспортного средства под погрузку:</p>
+<ul class="bullets">
+  <li>50 000 тенге — при уведомлении о неподаче менее чем за 24 часа до времени погрузки либо при фактической неподаче ТС;</li>
+  <li>25 000 тенге — при уведомлении о неподаче позднее 6 часов с момента подтверждения Заявки, но ранее чем за 24 часа до погрузки;</li>
+  <li>штраф не применяется, если уведомление сделано в течение 6 часов с момента подтверждения Заявки.</li>
+</ul>
+<p class="subnum"><strong>6.2. Опоздание на погрузку</strong></p>
+<p>Несогласованное опоздание транспортного средства более чем на 2 часа считается существенным нарушением. Штраф — 10 000 тенге за каждый полный час опоздания, но не более 50% стоимости перевозки.</p>
+<p class="subnum"><strong>6.3. Отказ от перевозки</strong></p>
+<p>Односторонний отказ Перевозчика от подтверждённой Заявки без уважительных причин влечёт штраф в размере 30% стоимости перевозки.</p>
+
+<div class="repeat-head">
+  <p class="frame-title">Договор перевозки груза</p>
+  <p class="platform">Цифровая логистическая платформа «{{ platform_name }}»</p>
+</div>
+
+<p class="subnum"><strong>6.4. Нарушение условий перевозки</strong></p>
+<p>Перевозчик несёт ответственность за:</p>
+<ul class="bullets">
+  <li>отсутствие обязательных креплений;</li>
+  <li>несоблюдение температурного режима;</li>
+  <li>нарушение требований к перевозке груза.</li>
+</ul>
+<p>Убытки возмещаются в полном объёме.</p>
+
+<h2 class="section">7. Простои и ожидание</h2>
+<p><strong>7.1.</strong> В случае простоя транспортного средства по вине Заказчика Заказчик компенсирует Перевозчику фактически понесённые расходы.</p>
+<p><strong>7.2.</strong> В случае простоя по вине Перевозчика ответственность несёт Перевозчик.</p>
+
+<h2 class="section">8. Документирование и фиксация нарушений</h2>
+<p><strong>8.1.</strong> Все нарушения условий перевозки подлежат фиксации актами либо средствами цифровой логистической платформы.</p>
+<p><strong>8.2.</strong> Электронные отметки, уведомления и журналы событий Платформы признаются доказательствами.</p>
+
+<h2 class="section">9. Электронный документооборот</h2>
+<p><strong>9.1.</strong> Настоящая Заявка может быть оформлена и подписана в электронном виде.</p>
+<p><strong>9.2.</strong> Документы, подписанные ЭЦП, имеют юридическую силу в соответствии с законодательством Республики Казахстан.</p>
+
+<h2 class="section">10. Подтверждение Заявки</h2>
+<p>Настоящая Заявка считается принятой к исполнению после её подтверждения Перевозчиком.</p>
+
+<div class="sign-grid">
+  <div class="sign-col">
+    <p><strong>Заказчик</strong></p>
+    <div class="sign-block">
+      <div class="lbl">Должность, ФИО</div>
+      <div class="sign-line"></div>
+      <div class="lbl">Подпись / ЭЦП</div>
+      <div class="sign-line"></div>
+      <div class="lbl">Дата</div>
+      <div class="sign-line"></div>
+    </div>
+  </div>
+  <div class="sign-col">
+    <p><strong>Перевозчик</strong></p>
+    <div class="sign-block">
+      <div class="lbl">Должность, ФИО</div>
+      <div class="sign-line"></div>
+      <div class="lbl">Подпись / ЭЦП</div>
+      <div class="sign-line"></div>
+      <div class="lbl">Дата</div>
+      <div class="sign-line"></div>
+    </div>
+  </div>
+</div>
+
+<p class="appendix-note">Дата формирования документа по данным Платформы: {{ request_date }}.</p>
+
+</div>
+</body>
+</html>

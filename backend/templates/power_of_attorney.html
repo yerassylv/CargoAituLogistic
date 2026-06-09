@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Доверенность</title>
+<style>
+@page { size: A4; margin: 16mm 14mm 18mm 14mm; }
+body {
+  font-family: "DejaVu Sans", Arial, sans-serif;
+  font-size: 9.5pt;
+  line-height: 1.38;
+  color: #000;
+  background: #fff;
+}
+.sheet { box-sizing: border-box; }
+@media screen {
+  body { margin: 0; padding: 16px; background: #d9d9d9; }
+  .sheet {
+    max-width: 210mm;
+    margin: 0 auto;
+    padding: 14mm 12mm;
+    background: #fff;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.18);
+  }
+}
+@media print {
+  body { margin: 0; padding: 0; background: #fff; }
+  .sheet { max-width: none; margin: 0; padding: 0; box-shadow: none; }
+}
+.doc-head .frame-title {
+  font-size: 8pt;
+  color: #666;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin: 0 0 2px 0;
+  text-align: left;
+}
+.doc-head .platform {
+  font-size: 8pt;
+  color: #666;
+  margin: 0 0 10px 0;
+  text-align: left;
+}
+.doc-head .poa-title {
+  font-size: 14pt;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: center;
+  margin: 0 0 4px 0;
+}
+.doc-head .poa-sub {
+  font-size: 10pt;
+  font-weight: 600;
+  text-align: center;
+  text-transform: uppercase;
+  margin: 0 0 12px 0;
+  letter-spacing: 0.3px;
+}
+.doc-head .meta-line {
+  font-size: 9.5pt;
+  margin: 4px 0;
+  text-align: left;
+}
+h2.section {
+  font-size: 10pt;
+  font-weight: bold;
+  margin: 14px 0 8px 0;
+  page-break-after: avoid;
+}
+.row {
+  display: table;
+  width: 100%;
+  margin-bottom: 7px;
+}
+.row .lbl {
+  display: table-cell;
+  white-space: nowrap;
+  vertical-align: bottom;
+  padding: 0 8px 2px 0;
+  font-weight: normal;
+}
+.row .val {
+  display: table-cell;
+  width: 100%;
+  vertical-align: bottom;
+  border-bottom: 1px solid #000;
+  padding: 2px 4px 1px 4px;
+  min-height: 1.35em;
+}
+.hint {
+  font-size: 8pt;
+  color: #555;
+  margin: 2px 0 8px 0;
+}
+p {
+  margin: 5px 0;
+  text-align: justify;
+}
+ul.bullets {
+  margin: 6px 0 10px 1.2em;
+  padding: 0;
+}
+ul.bullets li { margin-bottom: 4px; }
+.sub4 {
+  margin: 8px 0 6px 0;
+  text-align: justify;
+}
+.repeat-head {
+  margin: 18px 0 14px 0;
+  padding-top: 10px;
+  border-top: 1px solid #ccc;
+  page-break-inside: avoid;
+}
+.sign-block {
+  margin-top: 22px;
+  page-break-inside: avoid;
+}
+.sign-block h3 {
+  font-size: 10pt;
+  margin: 0 0 10px 0;
+}
+.sign-row {
+  margin-bottom: 14px;
+}
+.sign-row .lbl { font-weight: 600; margin-bottom: 4px; }
+.sign-line {
+  border-bottom: 1px solid #000;
+  min-height: 22px;
+  margin-top: 4px;
+}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+<div class="doc-head">
+  <p class="frame-title">Договор перевозки груза</p>
+  <p class="platform">Цифровая логистическая платформа «{{ platform_name }}»</p>
+  <div class="poa-title">Доверенность</div>
+  <p class="poa-sub">на получение и перевозку груза</p>
+  <p class="meta-line">№ {{ power_of_attorney_number }}</p>
+  <p class="meta-line">{% if issue_city %}г. {{ issue_city }}{% else %}г. ____________________{% endif %}</p>
+  <p class="meta-line">{% if issue_date_long %}{{ issue_date_long }}{% else %}«___» __________ 20__ г.{% endif %}</p>
+</div>
+
+<h2 class="section">1. Сведения о доверителе</h2>
+<p><strong>Доверитель (Перевозчик):</strong></p>
+<div class="row"><span class="lbl">Наименование:</span><span class="val">{{ carrier_name }}</span></div>
+<div class="row"><span class="lbl">Организационно-правовая форма:</span><span class="val">{{ carrier_org_form }}</span></div>
+<div class="row"><span class="lbl">БИН / ИИН:</span><span class="val">{{ carrier_bin_iin }}</span></div>
+<div class="row"><span class="lbl">Юридический адрес:</span><span class="val">{{ carrier_legal_address }}</span></div>
+<div class="row"><span class="lbl">Фактический адрес:</span><span class="val">{{ carrier_actual_address }}</span></div>
+<div class="row"><span class="lbl">в лице</span><span class="val">{{ carrier_representative }}</span></div>
+<p class="hint">(должность, ФИО)</p>
+<div class="row"><span class="lbl">действующего на основании</span><span class="val">{{ carrier_acting_basis }}</span></div>
+
+<h2 class="section">2. Сведения о доверенном лице (водителе)</h2>
+<p>Настоящей доверенностью уполномочивается:</p>
+<div class="row"><span class="lbl">Фамилия, имя, отчество:</span><span class="val">{{ driver_full_name }}</span></div>
+<div class="row"><span class="lbl">Дата рождения:</span><span class="val">{{ driver_birth_date }}</span></div>
+<div class="row"><span class="lbl">ИИН:</span><span class="val">{{ driver_iin }}</span></div>
+<p><strong>Документ, удостоверяющий личность:</strong></p>
+<div class="row"><span class="lbl">Паспорт / удостоверение личности №</span><span class="val">{{ driver_passport_number_line }}</span></div>
+<div class="row"><span class="lbl">кем и когда выдан:</span><span class="val">{{ driver_passport_issued }}</span></div>
+<p><strong>Водительское удостоверение:</strong></p>
+<p>Серия <span style="border-bottom:1px solid #000;padding:0 6px;min-width:3em;display:inline-block;">{{ driver_license_series }}</span>
+ № <span style="border-bottom:1px solid #000;padding:0 6px;min-width:5em;display:inline-block;">{{ driver_license_number }}</span>
+ &nbsp; Категория <span style="border-bottom:1px solid #000;padding:0 6px;min-width:3em;display:inline-block;">{{ driver_license_category }}</span></p>
+<div class="row"><span class="lbl">Дата выдачи</span><span class="val">{{ driver_license_issue_date }}</span></div>
+<div class="row"><span class="lbl">Контактный телефон:</span><span class="val">{{ driver_phone }}</span></div>
+
+<h2 class="section">3. Сведения о транспортном средстве</h2>
+<p><strong>Транспортное средство (тягач):</strong></p>
+<div class="row"><span class="lbl">Марка, модель</span><span class="val">{{ tractor_brand_model }}</span></div>
+<div class="row"><span class="lbl">Государственный номер</span><span class="val">{{ tractor_plate }}</span></div>
+<p><strong>Прицеп / полуприцеп:</strong></p>
+<div class="row"><span class="lbl">Марка, модель</span><span class="val">{{ trailer_brand_model }}</span></div>
+<div class="row"><span class="lbl">Государственный номер</span><span class="val">{{ trailer_plate }}</span></div>
+<div class="row"><span class="lbl">Грузоподъёмность:</span><span class="val">{{ vehicle_tonnage }}</span></div>
+<div class="row"><span class="lbl">Тип кузова:</span><span class="val">{{ vehicle_body_type }}</span></div>
+
+<h2 class="section">4. Полномочия доверенного лица</h2>
+<p>Доверенное лицо уполномочивается:</p>
+<p class="sub4"><strong>4.1.</strong> Представлять интересы Доверителя при получении, погрузке, перевозке и передаче груза в рамках исполнения договора перевозки груза.</p>
+
+<div class="repeat-head">
+  <p class="frame-title">Договор перевозки груза</p>
+  <p class="platform">Цифровая логистическая платформа «{{ platform_name }}»</p>
+</div>
+
+<p class="sub4"><strong>4.2.</strong> Получать груз у грузоотправителя, подписывать товаросопроводительные и иные документы, связанные с перевозкой груза.</p>
+<p class="sub4"><strong>4.3.</strong> Осуществлять перевозку груза по маршруту, указанному в Заявке на перевозку № {{ request_number }} от {{ request_date }} ({{ route }}).</p>
+<p class="sub4"><strong>4.4.</strong> Подписывать акты приёма-передачи груза, товарно-транспортные накладные и иные документы, необходимые для выполнения перевозки.</p>
+
+<h2 class="section">5. Основание выдачи доверенности</h2>
+<p>Доверенность выдана в рамках исполнения:</p>
+<ul class="bullets">
+  <li>Договора перевозки груза № {{ carriage_contract_number }} от {{ carriage_contract_date_long }};</li>
+  <li>Заявки на перевозку груза № {{ request_number }} от {{ request_date_long }}.</li>
+</ul>
+
+<h2 class="section">6. Сведения о грузе</h2>
+<div class="row"><span class="lbl">Наименование груза:</span><span class="val">{{ cargo_name }}</span></div>
+<div class="row"><span class="lbl">Количество (вес):</span><span class="val">{{ cargo_weight }}</span></div>
+<div class="row"><span class="lbl">Единица измерения:</span><span class="val">{{ cargo_unit }}</span></div>
+
+<h2 class="section">7. Срок действия доверенности</h2>
+<p>Настоящая доверенность выдана сроком до {{ valid_until_long }}.</p>
+<p>По истечении указанного срока доверенность считается недействительной.</p>
+
+<h2 class="section">8. Заключительные положения</h2>
+<p><strong>8.1.</strong> Доверенность выдана без права передоверия, если иное не указано дополнительно.</p>
+<p><strong>8.2.</strong> Настоящая доверенность может быть оформлена и подписана в электронном виде с использованием электронной цифровой подписи и имеет юридическую силу в соответствии с законодательством Республики Казахстан.</p>
+
+<h2 class="section">9. Подписи</h2>
+<div class="sign-block">
+  <h3>Доверитель (Перевозчик):</h3>
+  <div class="sign-row">
+    <div class="lbl">Должность:</div>
+    <div class="sign-line"></div>
+  </div>
+  <div class="sign-row">
+    <div class="lbl">ФИО:</div>
+    <div class="sign-line">{{ carrier_signatory_name }}</div>
+  </div>
+  <div class="sign-row">
+    <div class="lbl">Подпись:</div>
+    <div class="sign-line"></div>
+  </div>
+  <p><strong>М.П.</strong></p>
+</div>
+<div class="sign-block">
+  <h3>Доверенное лицо (водитель):</h3>
+  <div class="sign-row">
+    <div class="lbl">ФИО:</div>
+    <div class="sign-line">{{ driver_full_name }}</div>
+  </div>
+  <div class="sign-row">
+    <div class="lbl">Подпись:</div>
+    <div class="sign-line"></div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>

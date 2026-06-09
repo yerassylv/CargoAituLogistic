@@ -1,0 +1,1486 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Заявки — CargoAitu</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230066cc'/%3E%3Cpath fill='white' d='M7 10h12v4H7V10zm0 6h8v8H7v-8zm10 0h8l2 2v6h-10v-8z'/%3E%3C/svg%3E">
+  
+  <script>
+    (function() {
+      const userStr = localStorage.getItem('user');
+      const isAuth = localStorage.getItem('isAuthenticated') === 'true';
+      const isAuthenticated = userStr && isAuth;
+      
+      if (isAuthenticated) {
+        document.documentElement.classList.add('authenticated');
+      } else {
+        document.documentElement.classList.remove('authenticated');
+      }
+    })();
+  </script>
+  
+  
+  <style>
+    
+    p.filters-subtitle {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #6b7280;
+      margin: 4px 0 12px 0;
+      font-weight: 400;
+    }
+    h2.filters-title {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+      font-size: 20px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin: 0 0 8px 0;
+      line-height: 1.4;
+    }
+    .filters-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .filters-title-section {
+      flex: 1;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+      background: #f5f6f8;
+      color: #1a1a1a;
+      margin: 0;
+      padding: 0;
+    }
+    .main {
+      padding: 32px 24px;
+      background: #f5f6f8;
+      
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .content {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .filters {
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+  </style>
+  
+  <link rel="preload" href="styles.css?v=33" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript>
+    <link rel="stylesheet" href="styles.css?v=33">
+  </noscript>
+  <script>
+    !function(e){"use strict";var t=function(t,n,o){var i,r=e.document,a=r.createElement("link");if(n)i=n;else{var l=(r.body||r.getElementsByTagName("head")[0]).childNodes;i=l[l.length-1]}var d=r.styleSheets;a.rel="stylesheet",a.href=t,a.media="only x",function e(t){if(r.body)return t();setTimeout(function(){e(t)})}(function(){i.parentNode.insertBefore(a,n?i:i.nextSibling)});var f=function(e){for(var t=a.href,n=d.length;n--;)if(d[n].href===t)return e();setTimeout(function(){f(e)})};return a.addEventListener&&a.addEventListener("load",function(){this.media=o||"all"}),a.onloadcssdefined=f,f(function(){a.media!==o&&(a.media=o||"all")}),a};"undefined"!=typeof exports?exports.loadCSS=t:e.loadCSS=t}("undefined"!=typeof global?global:this);
+    setTimeout(function() {
+      var link = document.querySelector('link[rel="preload"][as="style"]');
+      if (link && link.rel === 'preload') {
+        loadCSS('styles.css?v=33');
+      }
+    }, 3000);
+  </script>
+</head>
+<body class="page-loading page-requests">
+
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">CargoAitu</div>
+    <nav class="nav" id="mainNav">
+      <a href="#" class="nav-item active" data-page="requests">Заявки</a>
+      <a href="#" class="nav-item" data-page="organizations">Организации</a>
+      <a href="#" class="nav-item" data-page="partners">Партнёры</a>
+    </nav>
+    <div class="header-actions">
+      <div class="search">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M7 12A5 5 0 1 0 7 2a5 5 0 0 0 0 10zM13 13l-3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <input type="text" id="requestsSearchInput" placeholder="Найти заявку..." oninput="filterRequestsBySearch()" />
+        <button class="search-clear" id="requestsSearchClear" onclick="clearRequestsSearch()" style="display: none;">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M12 4L4 12M4 4l8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <div id="userHeaderInfo" class="user" style="display: none;">
+        <div class="user-profile-trigger" id="userProfileTrigger">
+          <span class="user-name-main" id="headerUserName">-</span>
+          <span class="user-name-full" id="headerUserFullName">-</span>
+          <svg class="user-caret" width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M2 4L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div id="userProfileDropdown" class="user-profile-dropdown" style="display: none;">
+          <div class="dropdown-header">
+            <div class="dropdown-user-name" id="dropdownUserName">-</div>
+            <div class="dropdown-user-role" id="dropdownUserRole">-</div>
+          </div>
+          <div class="dropdown-menu">
+            <a href="trucks.html" class="dropdown-item">
+              <span>Машины</span>
+            </a>
+            <a href="drivers.html" class="dropdown-item">
+              <span>Водители</span>
+            </a>
+            <a href="messages.html" class="dropdown-item" id="messagesMenuItem">
+              <span>Уведомления</span>
+              <span class="dropdown-badge" id="messagesBadge" style="display: none;">0</span>
+            </a>
+            <a href="#" class="dropdown-item" id="paymentDetailsMenuItem">
+              <span>Платёжные реквизиты</span>
+            </a>
+            <a href="egov-company.html" class="dropdown-item" id="egovCompanyMenuItem" target="_blank" rel="noopener noreferrer">
+              <span>Проверить компанию</span>
+            </a>
+            <div class="dropdown-divider"></div>
+            <a href="#" class="dropdown-item dropdown-item-danger" id="logoutMenuItem">
+              <span>Выйти</span>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div id="headerAuthButtons">
+        <a href="login.html" class="btn-login">Войти</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+
+<div id="landingPage" class="landing-page" style="display: none;">
+  <div class="landing-hero">
+    <div class="landing-content">
+      <h1 class="landing-title">КРУПНОТОННАЖНЫЕ FTL-ПЕРЕВОЗКИ</h1>
+      <p class="landing-subtitle">Полностью загруженные машины: рефрижераторы, тентованные, изотермические</p>
+      <div class="landing-actions">
+        <a href="login.html" class="btn-landing-primary">Войти</a>
+        <a href="login.html" class="btn-landing-secondary">Зарегистрироваться</a>
+      </div>
+    </div>
+    <footer class="landing-footer">
+      <div class="landing-footer-content">
+        <div class="landing-footer-links">
+          <a href="#">Регламент сайта</a>
+          <a href="#">Лицензионный договор</a>
+          <a href="#">Политика конфиденциальности</a>
+          <a href="#">Персональные данные</a>
+          <a href="#">Помощь</a>
+          <a href="#">Сообщить о нарушении</a>
+        </div>
+        <div class="landing-footer-contact">
+          <span>Поддержка: support@cargoaitu.kz</span>
+          <span>8 800 250-02-00</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+</div>
+
+
+<main class="main page page-visible" id="mainContent">
+  <div class="content">
+    
+    <div class="filters filters--marketplace">
+      <div class="filters-header filters-header--market">
+        <div class="filters-title-section">
+          <div class="filters-title-row">
+            <h2 class="filters-title" id="requestsMarketTitle">Биржа грузов</h2>
+            <button type="button" class="market-help-trigger" id="marketHelpTrigger" aria-label="Справка по разделу" title="Биржа — все открытые заявки. «Мои заявки» — вы заказчик. «Я участвую» — вы уже сделали ставку. Фильтры и поиск не меняют данные на сервере, только отбор на экране.">?</button>
+          </div>
+          <p class="filters-subtitle filters-subtitle--market" id="requestsMarketSubtitle">Грузы и заявки на перевозку</p>
+          <p class="market-result-count" id="requestsMarketCount" aria-live="polite"></p>
+        </div>
+        <div class="filters-header-actions">
+          <span id="refreshIndicator" class="refresh-indicator refresh-indicator--market" title="Список обновляется автоматически каждые ~10 секунд, пока открыт раздел">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M7 1.5V4.5M7 9.5V12.5M2.5 7H5.5M8.5 7H11.5M10.5 3.5L9 5M5 9L3.5 10.5M10.5 10.5L9 9M5 5L3.5 3.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <button id="createRequestBtn" class="btn-create btn-create--hero" type="button">
+            <span class="btn-icon">+</span>
+            Создать заявку
+          </button>
+        </div>
+      </div>
+
+      <div class="market-sticky-stack">
+        <div class="market-tabs" role="tablist" aria-label="Режим просмотра заявок">
+          <button type="button" class="market-tab market-tab--active" data-list-mode="all" role="tab" aria-selected="true">Все заявки</button>
+          <button type="button" class="market-tab" data-list-mode="mine" role="tab" aria-selected="false">Мои заявки</button>
+          <button type="button" class="market-tab" data-list-mode="participating" role="tab" aria-selected="false">Я участвую</button>
+        </div>
+
+        <div class="market-controls-row">
+          <button type="button" class="market-filters-toggle" id="marketFiltersToggle" aria-expanded="false" aria-controls="marketFiltersPanel">
+            Фильтры <span class="market-filters-toggle-chevron" aria-hidden="true">▼</span>
+          </button>
+          <div class="market-quick-chips" role="group" aria-label="Быстрые фильтры">
+            <button type="button" class="market-quick-chip" data-quick="today">Сегодня</button>
+            <button type="button" class="market-quick-chip" data-quick="price500k">До 500 000 ₸</button>
+            <button type="button" class="market-quick-chip" data-quick="route-aa" title="Алматы → Астана">Алматы — Астана</button>
+            <button type="button" class="market-quick-chip" data-quick="route-sa" title="Астана → Алматы">Астана — Алматы</button>
+            <button type="button" class="market-quick-chip" data-quick="route-as" title="Алматы → Шымкент">Алматы — Шымкент</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="marketFiltersPanel" class="market-filters-panel market-filters-panel--collapsed">
+        <div class="market-filters-inner">
+          <div class="market-filter-group">
+            <div class="market-filter-group-title">Маршрут</div>
+            <div class="market-filters-row">
+              <label class="market-filter-field">
+                <span class="market-filter-label">Откуда</span>
+                <input type="text" id="filterFromCity" class="market-filter-input" placeholder="Город отправления" autocomplete="off" />
+              </label>
+              <label class="market-filter-field">
+                <span class="market-filter-label">Куда</span>
+                <input type="text" id="filterToCity" class="market-filter-input" placeholder="Город назначения" autocomplete="off" />
+              </label>
+            </div>
+          </div>
+          <div class="market-filter-group">
+            <div class="market-filter-group-title">Стоимость, ₸</div>
+            <div class="market-filters-row market-filters-row--pair">
+              <label class="market-filter-field market-filter-field--narrow">
+                <span class="market-filter-label">От</span>
+                <input type="number" id="filterPriceMin" class="market-filter-input" placeholder="0" min="0" step="1000" />
+              </label>
+              <label class="market-filter-field market-filter-field--narrow">
+                <span class="market-filter-label">До</span>
+                <input type="number" id="filterPriceMax" class="market-filter-input" placeholder="Без лимита" min="0" step="1000" />
+              </label>
+            </div>
+          </div>
+          <div class="market-filter-group">
+            <div class="market-filter-group-title">Дата погрузки</div>
+            <div class="market-filters-row market-filters-row--pair">
+              <label class="market-filter-field">
+                <span class="market-filter-label">С</span>
+                <input type="date" id="filterDateFrom" class="market-filter-input" />
+              </label>
+              <label class="market-filter-field">
+                <span class="market-filter-label">По</span>
+                <input type="date" id="filterDateTo" class="market-filter-input" />
+              </label>
+            </div>
+          </div>
+          <div class="market-filter-actions">
+            <button type="button" class="market-filter-reset" id="filterResetBtn">Сбросить фильтры</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="filter-tags filter-tags--market">
+        <button type="button" class="tag" onclick="filterByStatus('active', this)">Активные</button>
+        <button type="button" class="tag" onclick="filterByStatus('in_progress', this)">В работе</button>
+        <button type="button" class="tag" onclick="filterByStatus('completed', this)">Выполненные</button>
+        <button type="button" class="tag active" onclick="filterByStatus(null, this)">Все статусы</button>
+      </div>
+    </div>
+
+    <div class="requests-grid-wrap">
+      <div id="tableSkeleton" class="requests-grid-skeleton">
+        <div class="request-card-skeleton"></div>
+        <div class="request-card-skeleton"></div>
+        <div class="request-card-skeleton"></div>
+      </div>
+      <div id="requestsTableBody" class="requests-grid table-body table-body--loading"></div>
+    </div>
+  </div>
+</main>
+
+
+<main id="organizationsSection" class="main page page-hidden">
+  <div class="content">
+    <div class="filters">
+      <div class="filters-header filters-header--orgs">
+        <div class="filters-title-section">
+          <p class="org-page-kicker">Контрагенты</p>
+          <h2 class="filters-title">Организации</h2>
+          <p class="filters-subtitle">Проверьте компанию в реестре и оформите партнёрство для совместных сделок</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="organizations-container" id="organizationsContainer">
+      
+      <div id="organizationsSkeleton" class="organizations-skeleton">
+        <div class="organization-card skeleton">
+          <div class="organization-header">
+            <div class="organization-info">
+              <div class="skeleton-text skeleton-title"></div>
+              <div class="skeleton-text skeleton-subtitle"></div>
+            </div>
+            <div class="skeleton-badge"></div>
+          </div>
+          <div class="organization-details">
+            <div class="skeleton-text"></div>
+            <div class="skeleton-text"></div>
+          </div>
+          <div class="organization-actions">
+            <div class="skeleton-button"></div>
+          </div>
+        </div>
+        <div class="organization-card skeleton">
+          <div class="organization-header">
+            <div class="organization-info">
+              <div class="skeleton-text skeleton-title"></div>
+              <div class="skeleton-text skeleton-subtitle"></div>
+            </div>
+            <div class="skeleton-badge"></div>
+          </div>
+          <div class="organization-details">
+            <div class="skeleton-text"></div>
+            <div class="skeleton-text"></div>
+          </div>
+          <div class="organization-actions">
+            <div class="skeleton-button"></div>
+          </div>
+        </div>
+        <div class="organization-card skeleton">
+          <div class="organization-header">
+            <div class="organization-info">
+              <div class="skeleton-text skeleton-title"></div>
+              <div class="skeleton-text skeleton-subtitle"></div>
+            </div>
+            <div class="skeleton-badge"></div>
+          </div>
+          <div class="organization-details">
+            <div class="skeleton-text"></div>
+            <div class="skeleton-text"></div>
+          </div>
+          <div class="organization-actions">
+            <div class="skeleton-button"></div>
+          </div>
+        </div>
+      </div>
+      
+      <div id="organizationsContent" class="organizations-content hidden"></div>
+    </div>
+  </div>
+</main>
+
+
+<main id="partnersSection" class="main page page-hidden">
+  <div class="content">
+    <div class="filters">
+      <div class="filters-header filters-header--orgs">
+        <div class="filters-title-section">
+          <p class="org-page-kicker">Связи</p>
+          <h2 class="filters-title">Партнёры</h2>
+          <p class="filters-subtitle">Активные договоры и запросы на подписание — без лишних уведомлений, в одном списке</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="organizations-container" id="partnersContainer">
+      <div id="partnersSkeleton" class="organizations-skeleton">
+        <div class="organization-card skeleton">
+          <div class="organization-header">
+            <div class="organization-info">
+              <div class="skeleton-text skeleton-title"></div>
+              <div class="skeleton-text skeleton-subtitle"></div>
+            </div>
+            <div class="skeleton-badge"></div>
+          </div>
+          <div class="organization-details">
+            <div class="skeleton-text"></div>
+            <div class="skeleton-text"></div>
+          </div>
+          <div class="organization-actions">
+            <div class="skeleton-button"></div>
+          </div>
+        </div>
+      </div>
+      <div id="partnersContent" class="organizations-content hidden"></div>
+    </div>
+  </div>
+</main>
+
+
+<div id="partnershipAgreementModal" class="modal" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="partnershipAgreementTitle">
+  <div class="modal-content modal-large" style="max-width: 760px;">
+    <div class="modal-header">
+      <h2 id="partnershipAgreementTitle">Договор партнёрства</h2>
+      <button type="button" class="modal-close" id="partnershipAgreementCloseBtn" aria-label="Закрыть">&times;</button>
+    </div>
+    <div class="modal-body" style="padding: 0;">
+      <iframe id="partnershipAgreementIframe" title="Текст договора партнёрства" style="width: 100%; min-height: 440px; border: 0; background: #fff;"></iframe>
+    </div>
+    <div id="partnershipAgreementSignFooter" class="modal-actions" style="display: none; flex-direction: column; align-items: stretch; gap: 12px; border-top: 1px solid #e5e7eb; padding-top: 16px;">
+      <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; font-size: 14px; line-height: 1.4; color: #374151;">
+        <input type="checkbox" id="partnershipAgreementAck" style="margin-top: 3px;" />
+        <span>Я ознакомился(ась) с текстом договора и подписываю его своей электронной цифровой подписью (ЭЦП).</span>
+      </label>
+      <button type="button" class="btn-login" id="partnershipAgreementSignBtn" disabled>Подписать ЭЦП</button>
+    </div>
+  </div>
+</div>
+
+
+<div id="partnershipConfirmModal" class="modal" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="partnershipConfirmTitle">
+  <div class="modal-content" style="max-width: 440px;">
+    <div class="modal-header">
+      <h2 id="partnershipConfirmTitle">Партнёрство</h2>
+      <button type="button" class="modal-close" id="partnershipConfirmCloseBtn" aria-label="Закрыть">&times;</button>
+    </div>
+    <div class="modal-body" style="padding: 16px 20px;">
+      <p id="partnershipConfirmMessage" style="margin: 0; font-size: 15px; line-height: 1.5; color: var(--text-primary, #1f2937);">
+        Отправить запрос на заключение партнёрства с этой компанией?
+      </p>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary" id="partnershipConfirmCancelBtn">Отмена</button>
+      <button type="button" class="btn-login" id="partnershipConfirmOkBtn">Отправить</button>
+    </div>
+  </div>
+</div>
+
+
+<div id="orgEgovRegistryModal" class="modal" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="orgEgovRegistryTitle">
+  <div class="modal-content modal-large" style="max-width: 720px;">
+    <div class="modal-header">
+      <h2 id="orgEgovRegistryTitle">Данные из реестра</h2>
+      <button type="button" class="modal-close" id="orgEgovRegistryCloseBtn" aria-label="Закрыть">&times;</button>
+    </div>
+    <div class="modal-body" style="padding: 16px 20px;">
+      <p style="margin: 0 0 12px; font-size: 13px; color: var(--text-muted, #6b7280);">
+        Сведения с портала <a href="https://data.egov.kz" target="_blank" rel="noopener noreferrer" style="color: var(--accent);">data.egov.kz</a> по БИН контрагента.
+      </p>
+      <div id="orgEgovRegistryLoading" style="display: none; text-align: center; padding: 24px; color: var(--text-muted);">Загрузка…</div>
+      <div id="orgEgovRegistryInfo" style="display: none; margin-top: 8px; padding: 14px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; color: #1e3a8a; font-size: 14px; line-height: 1.5;">
+        <span id="orgEgovRegistryInfoText"></span>
+      </div>
+      <div id="orgEgovRegistryError" style="display: none; margin-top: 8px; padding: 12px; background: #fef2f2; border-radius: 8px; color: #b91c1c; font-size: 14px;">
+        <strong>Ошибка:</strong> <span id="orgEgovRegistryErrorText"></span>
+      </div>
+      <div id="orgEgovRegistryData" style="display: none;">
+        <div class="payment-details-grid" id="orgEgovRegistryGrid"></div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary" id="orgEgovRegistryOkBtn">Закрыть</button>
+    </div>
+  </div>
+</div>
+
+<section id="userSection" class="profile-section" style="display: none;">
+      <div class="profile">
+        <div class="profile-top">
+          <div class="profile-avatar"></div>
+          <div>
+            <div class="profile-name" id="userFullName">-</div>
+            <div class="profile-iin">ИИН: <span id="userIIN">-</span></div>
+          </div>
+        </div>
+        <div class="profile-grid">
+          <div class="profile-item">
+            <div class="profile-label">Email</div>
+            <div class="profile-value" id="userEmail">-</div>
+          </div>
+          <div class="profile-item">
+            <div class="profile-label">Организация</div>
+            <div class="profile-value" id="userCompany">-</div>
+          </div>
+          <div class="profile-item">
+            <div class="profile-label">Серийный номер</div>
+            <div class="profile-value" id="userCertSerial">-</div>
+          </div>
+          <div class="profile-item">
+            <div class="profile-label">Издатель</div>
+            <div class="profile-value" id="userCertIssuer">-</div>
+          </div>
+          <div class="profile-item">
+            <div class="profile-label">Действителен до</div>
+            <div class="profile-value" id="userCertValidTo">-</div>
+          </div>
+          <div class="profile-item">
+            <div class="profile-label">Последний вход</div>
+            <div class="profile-value" id="userLastLogin">-</div>
+          </div>
+        </div>
+        
+        
+        <div class="payment-details-section" id="paymentDetailsSection" style="display: none;">
+          <div class="payment-details-card">
+            <div class="section-header">
+              <h3>Платёжные реквизиты</h3>
+              <button id="editPaymentDetailsBtn" class="btn-edit">Редактировать</button>
+            </div>
+            <div class="payment-details-grid" id="paymentDetailsGrid">
+              <div class="payment-field">
+                <label>Получатель<span class="required">*</span></label>
+                <div class="value" id="paymentRecipient">—</div>
+              </div>
+              <div class="payment-field">
+                <label>ИНН / БИН<span class="required">*</span></label>
+                <div class="value" id="paymentIIN">—</div>
+              </div>
+              <div class="payment-field">
+                <label>Банк получателя<span class="required">*</span></label>
+                <div class="value empty" id="paymentBankName">Не указан</div>
+              </div>
+              <div class="payment-field">
+                <label>БИК<span class="required">*</span></label>
+                <div class="value empty" id="paymentBIK">Не указан</div>
+              </div>
+              <div class="payment-field">
+                <label>Расчётный счёт (IBAN / Р/С)<span class="required">*</span></label>
+                <div class="value empty" id="paymentAccount">Не указан</div>
+              </div>
+              <div class="payment-field">
+                <label>Корр. счёт</label>
+                <div class="value empty" id="paymentCorrAccount">—</div>
+              </div>
+              <div class="payment-field">
+                <label>КПП (если РФ)</label>
+                <div class="value empty" id="paymentKPP">—</div>
+              </div>
+              <div class="payment-field">
+                <label>Валюта</label>
+                <div class="value" id="paymentCurrencyDisplay">KZT</div>
+              </div>
+            </div>
+            <div class="payment-details-hint">
+              Эти реквизиты используются для автоматического формирования счётов на оплату.
+            </div>
+          </div>
+        </div>
+        
+        
+        <div class="payment-details-section" id="egovCompanySection" style="display: none;">
+          <div class="payment-details-card">
+            <div class="section-header">
+              <h3>Данные компании из реестра</h3>
+              <button id="loadEgovDataBtn" class="btn-edit">Проверить компанию</button>
+            </div>
+            <div style="margin-top: 16px; padding: 12px; background: var(--surface-muted); border-radius: 8px; color: var(--text-muted); font-size: 14px;">
+              Укажите БИН в платёжных реквизитах и нажмите "Проверить компанию" для получения официальных данных из реестра юридических лиц.
+            </div>
+            <div id="egovCompanyData" style="display: none;">
+              <div class="payment-details-grid" id="egovCompanyGrid">
+                
+              </div>
+              <div class="payment-details-hint" style="margin-top: 14px;">
+                <small>Данные получены с портала <a href="https://data.egov.kz" target="_blank" style="color: var(--accent);">data.egov.kz</a></small>
+              </div>
+            </div>
+            <div id="egovCompanyError" style="display: none; margin-top: 16px;">
+              <div class="error-message" style="padding: 12px; border-radius: 8px; background: #fee; border: 1px solid #fcc; color: #c33;">
+                <strong>Ошибка:</strong> <span id="egovErrorText"></span>
+              </div>
+            </div>
+            <div id="egovCompanyLoading" style="display: none; text-align: center; padding: 20px; color: var(--text-muted);">
+              ⏳ Загрузка данных...
+            </div>
+          </div>
+        </div>
+        
+        <button id="logoutBtn" class="btn-logout">Выйти</button>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+
+<div id="createRequestModal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Создать заявку на перевозку</h2>
+      <button class="modal-close" onclick="closeCreateModal()">&times;</button>
+    </div>
+    <form id="createRequestForm" onsubmit="createRequest(event)">
+      <div class="form-section">
+        <div class="form-section-title">Основная информация</div>
+        <div class="form-grid">
+          <div class="form-field full-width">
+            <label>Название заявки <span class="required">*</span></label>
+            <input type="text" id="requestTitle" placeholder="Например: Доставка товаров из Астаны в Алматы" required />
+          </div>
+          <div class="form-field">
+            <label>Тип кузова</label>
+            <select id="requestBodyType">
+              <option value="">Загрузка…</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Тип груза</label>
+            <input type="text" id="requestCargoType" placeholder="Например: Одежда, продукты" />
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Маршрут</div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Город отправления <span class="required">*</span></label>
+            <input type="text" id="requestFromCity" placeholder="Например: Астана" required />
+          </div>
+          <div class="form-field">
+            <label>Город назначения <span class="required">*</span></label>
+            <input type="text" id="requestToCity" placeholder="Например: Алматы" required />
+          </div>
+          <div class="form-field">
+            <label>Адрес отправления</label>
+            <input type="text" id="requestFromAddress" placeholder="Улица, дом" />
+          </div>
+          <div class="form-field">
+            <label>Адрес назначения</label>
+            <input type="text" id="requestToAddress" placeholder="Улица, дом" />
+          </div>
+        </div>
+        
+        <div class="form-field full-width" style="margin-top: 20px;">
+          <label>Маршрут на карте</label>
+          <div id="createRequestMap" style="position: relative; width: 100%; height: 400px; border-radius: 8px; border: 1px solid #e5e7eb; background: #f3f4f6; cursor: pointer;">
+            <div id="createRequestMapPlaceholder" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; text-align: center; padding: 16px; color: #6b7280; font-size: 14px; z-index: 1; pointer-events: none;">Начните вводить маршрут выше или нажмите сюда — карта загрузится по запросу</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Сроки</div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Дата погрузки <span class="required">*</span></label>
+            <input type="datetime-local" id="requestLoadingDate" required />
+          </div>
+          <div class="form-field">
+            <label>Желаемая дата доставки</label>
+            <input type="datetime-local" id="requestDeliveryDate" />
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Аукцион</div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Тип аукциона</label>
+            <div style="padding: 10px 12px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 14px; color: #374151;">
+              Открытый — все участники видят ставки
+            </div>
+            <input type="hidden" id="requestAuctionType" value="OPEN" />
+          </div>
+          <div class="form-field">
+            <label>Начало приема ставок</label>
+            <input type="datetime-local" id="requestBiddingStartedAt" />
+            <small style="color: #6b7280; font-size: 12px;">Если не указано, начнется сразу</small>
+          </div>
+          <div class="form-field">
+            <label>Окончание приема ставок</label>
+            <input type="datetime-local" id="requestBiddingEndsAt" />
+            <small style="color: #6b7280; font-size: 12px;">Если не указать: 24 ч (экспресс — 2 ч)</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Вес (кг)</label>
+            <input type="number" id="requestWeight" step="0.01" placeholder="0.00" />
+          </div>
+          <div class="form-field">
+            <label>Объем (м³)</label>
+            <input type="number" id="requestVolume" step="0.01" placeholder="0.00" />
+          </div>
+          <div class="form-field">
+            <label>Максимальная цена (₸)</label>
+            <input type="number" id="requestMaxPrice" step="0.01" placeholder="0.00" />
+            <small style="color: #6b7280; font-size: 12px;">Потолок для ставок перевозчиков</small>
+          </div>
+          <div class="form-field">
+            <label>
+              <input type="checkbox" id="requestIsExpress" />
+              Экспресс: окно приёма ставок 2 ч; автовыбор — среди 5 самых ранних ставок по цене и рейтингу
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Дополнительная информация</div>
+        <div class="form-grid">
+          <div class="form-field full-width">
+            <label>Описание груза</label>
+            <textarea id="requestDescription" rows="3" placeholder="Подробное описание груза, требования к перевозке..."></textarea>
+          </div>
+          <div class="form-field full-width">
+            <label>Дополнительные условия</label>
+            <textarea id="requestConditions" rows="2" placeholder="Особые требования, условия оплаты..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" onclick="closeCreateModal()">Отмена</button>
+        <button type="submit" class="btn-login">Создать заявку</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<div id="requestDetailModal" class="modal" style="display: none;">
+  <div class="modal-content modal-large rd-detail-modal">
+    <div class="modal-header rd-detail-header">
+      <div class="modal-header-content rd-detail-header__inner">
+        <div class="rd-detail-header__main">
+          <div class="rd-detail-header__row-top">
+            <h2 id="detailRequestNumber" class="rd-detail-header__id">№-</h2>
+            <div class="request-status-badge" id="detailRequestStatus">-</div>
+          </div>
+          <div class="rd-detail-header__route" id="detailRequestRoute">-</div>
+          <div class="rd-detail-header__dates" id="detailRequestDates">-</div>
+          <div class="rd-detail-header__price" id="detailRequestPrice">-</div>
+        </div>
+      </div>
+      <button type="button" class="modal-close" onclick="closeRequestDetailModal()">&times;</button>
+    </div>
+
+    <div id="carrierAwaitingBanner" class="carrier-await-banner" style="display: none;" role="region" aria-label="Подтверждение заказа">
+      <p class="carrier-await-banner__text">Заказчик выбрал вас исполнителем. Подтвердите заказ или откажитесь — до ответа заявка остаётся в ожидании.</p>
+      <div class="carrier-await-banner__actions">
+        <button type="button" class="btn-login" onclick="carrierAcceptRequest()">Подтвердить заказ</button>
+        <button type="button" class="btn-secondary" onclick="carrierDeclineRequest()">Отказаться</button>
+      </div>
+    </div>
+    
+    <div class="modal-tabs">
+      <button class="tab-btn active" data-tab="info" onclick="switchTab('info')">Информация</button>
+      <button class="tab-btn" data-tab="bids" onclick="switchTab('bids')" id="tabBids">Ставки</button>
+      <button class="tab-btn" data-tab="carrier" onclick="switchTab('carrier')" id="tabCarrier" style="display: none;">Перевозчик</button>
+      <button class="tab-btn" data-tab="conditions" onclick="switchTab('conditions')">Условия</button>
+      <button class="tab-btn" data-tab="contract" onclick="switchTab('contract')" id="tabContract" style="display: none;">Контракт</button>
+      <button class="tab-btn" data-tab="closing" onclick="switchTab('closing')" id="tabClosing" style="display: none;">Закрытие</button>
+      <button class="tab-btn" data-tab="history" onclick="switchTab('history')" id="tabHistory">Изменения</button>
+    </div>
+    
+    <div class="modal-body rd-detail-body">
+      
+      <div id="detailSkeleton" class="detail-skeleton hidden">
+        <div class="detail-skeleton-header">
+          <div class="detail-skeleton-row">
+            <div class="detail-skeleton-cell detail-skeleton-id"></div>
+            <div class="detail-skeleton-cell detail-skeleton-status"></div>
+            <div class="detail-skeleton-cell detail-skeleton-route">
+              <div class="detail-skeleton-route-cities"></div>
+              <div class="detail-skeleton-route-distance"></div>
+            </div>
+            <div class="detail-skeleton-cell detail-skeleton-date"></div>
+            <div class="detail-skeleton-cell detail-skeleton-price"></div>
+            <div class="detail-skeleton-cell detail-skeleton-action"></div>
+            <div class="detail-skeleton-cell detail-skeleton-empty"></div>
+          </div>
+        </div>
+      </div>
+      
+      
+      <div class="tab-content active" id="tab-info">
+        <div class="detail-section">
+          <h3>Основная информация</h3>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <label>Название</label>
+              <div id="detailTitle">-</div>
+            </div>
+            <div class="detail-item">
+              <label>Заказчик</label>
+              <div id="detailCustomer">-</div>
+            </div>
+            <div class="detail-item">
+              <label>Тип кузова</label>
+              <div id="detailBodyType">-</div>
+            </div>
+            <div class="detail-item">
+              <label>Тип груза</label>
+              <div id="detailCargoType">-</div>
+            </div>
+            <div class="detail-item">
+              <label>Вес</label>
+              <div id="detailWeight">-</div>
+            </div>
+            <div class="detail-item">
+              <label>Объем</label>
+              <div id="detailVolume">-</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="detail-section">
+          <h3>Маршрут</h3>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <label>Откуда</label>
+              <div id="detailFrom">-</div>
+            </div>
+            <div class="detail-item">
+              <label>Куда</label>
+              <div id="detailTo">-</div>
+            </div>
+            <div class="detail-item full-width">
+              <label>Адрес отправления</label>
+              <div id="detailFromAddress">-</div>
+            </div>
+            <div class="detail-item full-width">
+              <label>Адрес назначения</label>
+              <div id="detailToAddress">-</div>
+            </div>
+            <div class="detail-item">
+              <label>Расстояние</label>
+              <div id="detailDistance">-</div>
+            </div>
+          </div>
+          <div class="rd-map-card">
+            <div class="rd-map-card__head">
+              <div class="rd-map-card__route" id="detailRouteMapTitle">—</div>
+              <div class="rd-map-card__meta" id="detailRouteMapMeta">—</div>
+            </div>
+            <div id="detailRequestMap" class="rd-map-card__canvas" role="application" aria-label="Карта маршрута"></div>
+          </div>
+        </div>
+        
+        <div class="detail-section" id="auctionInfo" style="display: none;">
+          <h3>О торгах</h3>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <label>Формат торгов</label>
+              <div>Аукцион</div>
+            </div>
+            <div class="detail-item">
+              <label>Максимальная цена (потолок)</label>
+              <div id="detailMaxPrice">-</div>
+            </div>
+            <div class="detail-item">
+              <label>Создана</label>
+              <div id="detailCreatedAt">-</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      
+      <div class="tab-content" id="tab-bids">
+        <div class="bids-header">
+          <h3>Ставки: <span id="bidsCount">0</span></h3>
+          <button class="btn-update" onclick="loadBidsForDetail()" title="Обновить список ставок">Обновить</button>
+        </div>
+        <div id="bidsList" class="bids-list">
+          <div class="empty">
+            <div class="empty-icon"></div>
+            <div class="empty-title">Нет ставок</div>
+            <div class="empty-text">Пока никто не подал предложение на эту заявку</div>
+          </div>
+        </div>
+      </div>
+      
+      
+      <div class="tab-content" id="tab-carrier">
+        
+        <button type="button" id="btnAssignDriver" onclick="openAssignDriverModal()" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;" tabindex="-1" aria-hidden="true">Назначить водителя</button>
+        <button type="button" id="btnAssignVehicle" onclick="openAssignVehicleModal()" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;" tabindex="-1" aria-hidden="true">Назначить машину</button>
+        <button type="button" id="btnCreateContract" onclick="createContract()" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;" tabindex="-1" aria-hidden="true">Создать договор-заявку</button>
+
+        <div id="carrierSetupPanel" class="carrier-setup-panel" style="display: none;">
+          <div class="carrier-setup-card">
+            <h3 class="carrier-setup-title">Настройка перевозки</h3>
+            <p class="carrier-setup-phase" id="carrierSetupPhaseLine"></p>
+            <div class="carrier-setup-steps" id="carrierSetupSteps" aria-label="Этапы настройки"></div>
+            <div class="carrier-setup-alert" id="carrierSetupAlert" role="status"></div>
+            <div class="carrier-setup-cta-row" id="carrierSetupMainCta"></div>
+            <div class="carrier-setup-subactions" id="carrierSetupSubactions"></div>
+            <div class="carrier-setup-summary" id="carrierSetupSummary" hidden></div>
+            <div class="carrier-setup-contract" id="carrierSetupContract"></div>
+          </div>
+        </div>
+
+        <div class="detail-section carrier-company-block">
+          <h3>Перевозчик</h3>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <label>Название</label>
+              <div id="detailCarrierName">-</div>
+            </div>
+            <div class="detail-item">
+              <label>ИНН</label>
+              <div id="detailCarrierINN">-</div>
+            </div>
+            <div class="detail-item">
+              <label>Телефон</label>
+              <div id="detailCarrierPhone">-</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      
+      <div class="tab-content" id="tab-history">
+        <div class="detail-section">
+          <h3>История изменений</h3>
+          <div id="requestHistory" class="history-list">
+            <div class="empty">
+              <div class="empty-icon"></div>
+              <div class="empty-title">Загрузка истории...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      
+      <div class="tab-content" id="tab-conditions">
+        <div class="detail-section">
+          <h3>Условия перевозки</h3>
+          <div class="conditions-content" id="detailConditions">-</div>
+        </div>
+        
+        <div class="detail-section">
+          <h3>Описание груза</h3>
+          <div class="conditions-content" id="detailDescription">-</div>
+        </div>
+      </div>
+      
+      
+      <div class="tab-content" id="tab-contract">
+        <div id="contractContent">
+          <div class="empty">
+            <div class="empty-icon"></div>
+            <div class="empty-title">Загрузка контракта...</div>
+          </div>
+        </div>
+      </div>
+      
+      
+      <div class="tab-content" id="tab-closing">
+        <div id="closingContent">
+          <div class="empty">
+            <div class="empty-icon"></div>
+            <div class="empty-title">Загрузка...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div id="bidModal" class="modal bid-modal" style="display: none;">
+  <div class="modal-content bid-modal__content">
+    <div class="modal-header bid-modal__header">
+      <div class="bid-modal__header-text">
+        <h2 id="bidModalTitle">Сделать ставку</h2>
+        <p class="bid-modal__subtitle">Укажите цену и условия — заказчик увидит ваш отклик на бирже</p>
+      </div>
+      <button type="button" class="modal-close bid-modal__close" onclick="closeBidModal()" aria-label="Закрыть">&times;</button>
+    </div>
+    <form id="bidForm" onsubmit="submitBid(event)">
+      <input type="hidden" id="bidRequestId" />
+      <input type="hidden" id="bidId" />
+      <input type="hidden" id="bidContextDistanceKm" value="" />
+
+      <div class="modal-body bid-modal__body">
+        <div id="bidModalContextCard" class="bid-modal__context">
+          <div class="bid-modal__context-route" id="bidContextRoute">—</div>
+          <div class="bid-modal__context-meta">
+            <span class="bid-modal__context-item" id="bidContextDistance">—</span>
+            <span class="bid-modal__dot" aria-hidden="true">·</span>
+            <span class="bid-modal__context-item" id="bidContextLoadingDate">—</span>
+            <span class="bid-modal__dot" aria-hidden="true">·</span>
+            <span class="bid-modal__context-item" id="bidContextBudget">—</span>
+          </div>
+        </div>
+
+        <div id="bidModalMarketStrip" class="bid-modal__market bid-modal__market--panel">
+          <div class="bid-modal__market-inner">
+            <div class="bid-modal__market-cell">
+              <span class="bid-modal__market-label">Предложений на бирже</span>
+              <strong id="bidMarketCountText" class="bid-modal__market-value">—</strong>
+            </div>
+            <div class="bid-modal__market-divider" aria-hidden="true"></div>
+            <div class="bid-modal__market-cell bid-modal__market-cell--best">
+              <span class="bid-modal__market-label">Лучшая цена</span>
+              <strong id="bidMarketBestPrice" class="bid-modal__market-value bid-modal__market-best">—</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="bid-modal__layout">
+          <section class="bid-modal__price-hero" aria-labelledby="bidPriceLabel">
+            <label id="bidPriceLabel" class="bid-modal__price-label" for="bidPrice">Ваша цена</label>
+            <div class="bid-modal__price-input-wrap">
+              <input type="text" id="bidPrice" class="bid-modal__price-input" inputmode="numeric" autocomplete="off" placeholder="0" required />
+              <span class="bid-modal__currency" aria-hidden="true">₸</span>
+            </div>
+            <p id="bidPriceRecHint" class="bid-modal__hint bid-modal__hint--rec" hidden></p>
+            <p class="bid-modal__hint bid-modal__hint--muted bid-modal__hint--grid">Сумма кратна 10 000 ₸</p>
+            <p id="bidPricePerKmLine" class="bid-modal__perkm bid-modal__perkm--sub"><span class="bid-modal__perkm-label">≈</span> <span id="bidPricePerKmDisplay">—</span> <span class="bid-modal__perkm-unit">₸/км</span> <span class="bid-modal__perkm-note">по расстоянию заявки</span></p>
+            <p id="bidModalPositionHint" class="bid-modal__position" role="status" hidden></p>
+          </section>
+
+          <div class="bid-modal__field-rows">
+            <div class="bid-modal__row-2">
+              <div class="form-field">
+                <label for="bidDeliveryTime">Срок доставки</label>
+                <select id="bidDeliveryTime">
+                  <option value="">Выберите</option>
+                  <option value="1 день">1 день</option>
+                  <option value="2 дня">2 дня</option>
+                  <option value="3 дня">3 дня</option>
+                  <option value="__other__">Другое</option>
+                </select>
+                <div id="bidDeliveryTimeOtherWrap" class="bid-modal__other-wrap" hidden>
+                  <input type="text" id="bidDeliveryTimeOther" class="bid-modal__input" placeholder="Укажите срок" autocomplete="off" />
+                </div>
+              </div>
+              <div class="form-field">
+                <label for="bidVehicleCapacity">Грузоподъёмность (т)</label>
+                <input type="number" id="bidVehicleCapacity" step="0.1" min="0" placeholder="Напр. 20" autocomplete="off" />
+              </div>
+            </div>
+            <div class="bid-modal__row-2">
+              <div class="form-field">
+                <label for="bidVehicleBodyType">Тип кузова</label>
+                <select id="bidVehicleBodyType">
+                  <option value="">Выберите</option>
+                  <option value="Тент">Тент</option>
+                  <option value="Рефрижератор">Рефрижератор</option>
+                  <option value="Изотерм">Изотерм</option>
+                  <option value="Бортовой">Бортовой</option>
+                  <option value="Площадка">Площадка</option>
+                  <option value="Контейнеровоз">Контейнеровоз</option>
+                  <option value="Цистерна">Цистерна</option>
+                  <option value="Низкорамник">Низкорамник</option>
+                  <option value="Автофургон">Автофургон</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label for="bidVehicleBrand">Марка / модель <span class="bid-modal__optional">необязательно</span></label>
+                <input type="text" id="bidVehicleBrand" placeholder="Например: Volvo FH" autocomplete="off" />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-field bid-modal__conditions">
+            <label for="bidConditions">Условия и комментарий</label>
+            <textarea id="bidConditions" rows="2" class="bid-modal__textarea-secondary" placeholder="Например: оплата по факту выгрузки; готовы к погрузке вечером; нужны сканы документов."></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="modal-actions bid-modal__footer">
+        <button type="button" class="btn-secondary" onclick="closeBidModal()">Отмена</button>
+        <div class="bid-modal__submit-block">
+          <button type="submit" class="btn-login bid-modal__submit" id="bidSubmitBtn">Сделать ставку</button>
+          <p class="bid-modal__reassure">Вы сможете изменить ставку позже</p>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<div id="selectWinnerModal" class="modal" style="display: none;">
+  <div class="modal-content modal-winner-pick">
+    <div class="modal-header modal-winner-pick__header">
+      <div class="modal-winner-pick__header-text">
+        <button type="button" id="winnerModalBackBtn" class="btn-winner-modal-back" onclick="backFromCarrierInWinnerModal()" style="display: none;" aria-label="Назад к списку предложений">← Назад к списку</button>
+        <h2 id="selectWinnerModalTitle" class="modal-winner-pick__title">Выберите перевозчика</h2>
+        <p id="selectWinnerModalSubtitle" class="modal-winner-pick__subtitle">Сравните цены и условия, при необходимости откройте карточку. Затем подтвердите выбор одной кнопкой.</p>
+      </div>
+      <button type="button" class="modal-close" onclick="closeSelectWinnerModal()" aria-label="Закрыть">&times;</button>
+    </div>
+    <div class="modal-body modal-winner-pick__body">
+      <div id="winnerBidsPanel" class="winner-modal-bids-panel">
+        <div class="bids-selection-list" id="bidsSelectionList">
+          
+        </div>
+      </div>
+      <div id="carrierWinnerDetailPanel" class="winner-modal-carrier-panel" style="display: none;">
+        <div id="carrierWinnerDetailContent" class="winner-modal-carrier-panel__inner"></div>
+      </div>
+    </div>
+    <div id="winnerPickerFooter" class="modal-actions modal-winner-pick__footer">
+      <button type="button" class="btn-winner-ghost" onclick="closeSelectWinnerModal()">Отмена</button>
+      <div class="modal-winner-pick__footer-actions">
+        <button type="button" class="btn-winner-auto-secondary" onclick="autoSelectWinner()">Автовыбор</button>
+        <button type="button" id="btnConfirmWinner" class="btn-winner-confirm" disabled onclick="confirmWinnerPickerSelection()">Выбрать исполнителя</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div id="carrierInfoModal" class="modal carrier-profile-modal-wrap" style="display: none;">
+  <div class="modal-content carrier-profile-modal">
+    <div class="modal-header carrier-profile-modal__header">
+      <h2 class="carrier-profile-modal__title">Перевозчик</h2>
+      <button type="button" class="modal-close" onclick="closeCarrierInfoModal()" aria-label="Закрыть">&times;</button>
+    </div>
+    <div class="modal-body carrier-profile-modal__body">
+      <div id="carrierInfoContent" class="carrier-profile-modal__scroll">
+        <div class="empty">
+          <div class="empty-icon"></div>
+          <div class="empty-title">Загрузка информации...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div id="assignDriverModal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Назначить водителя</h2>
+      <button class="modal-close" onclick="closeAssignDriverModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div id="driversList" class="drivers-selection-list">
+        <div class="empty">
+          <div class="empty-icon"></div>
+          <div class="empty-title">Загрузка водителей...</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary" onclick="closeAssignDriverModal()">Отмена</button>
+    </div>
+  </div>
+</div>
+
+
+<div id="assignVehicleModal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Назначить машину</h2>
+      <button class="modal-close" onclick="closeAssignVehicleModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div id="vehiclesList" class="vehicles-selection-list">
+        <div class="empty">
+          <div class="empty-icon"></div>
+          <div class="empty-title">Загрузка машин...</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary" onclick="closeAssignVehicleModal()">Отмена</button>
+    </div>
+  </div>
+</div>
+
+<script src="egov-company-display.js?v=2" defer></script>
+
+<script src="requests.js?v=42" defer></script>
+<script src="organizations.js?v=12" defer></script>
+
+
+<div class="chat-button" id="chatButton" onclick="toggleChat()" title="Поддержка" aria-label="Открыть чат поддержки">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M20 2H4a2 2 0 00-2 2v18l4-4h14a2 2 0 002-2V4a2 2 0 00-2-2z" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/>
+    <path d="M7 9h10M7 13h6" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+  </svg>
+</div>
+
+
+<div class="chat-modal" id="chatModal" role="dialog" aria-labelledby="chatHeaderTitle" aria-modal="true">
+  <div class="chat-modal-content">
+    <div class="chat-header">
+      <div class="chat-header-main">
+        <div class="chat-header-avatar" aria-hidden="true">
+          <span class="chat-header-avatar-text">C</span>
+        </div>
+        <div class="chat-header-text">
+          <div class="chat-header-title-row">
+            <h3 class="chat-header-title" id="chatHeaderTitle">Поддержка</h3>
+            <span class="chat-header-status" title="Команда на связи">
+              <span class="chat-header-status-dot" aria-hidden="true"></span>
+              Онлайн
+            </span>
+          </div>
+          <p class="chat-header-subtitle">Отвечаем обычно за 1–2 минуты</p>
+        </div>
+      </div>
+      <button type="button" class="chat-close" onclick="toggleChat()" aria-label="Закрыть чат">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="chat-onboarding" id="chatOnboarding">
+        <p class="chat-onboarding-text">Выберите действие ниже или опишите вопрос — поможем с заявками, перевозчиками и заказами.</p>
+      </div>
+      <div class="chat-message chat-message-bot chat-message--animate">
+        <div class="chat-message-avatar" aria-hidden="true">
+          <span class="chat-message-avatar-inner">C</span>
+        </div>
+        <div class="chat-message-inner">
+          <div class="chat-message-content chat-panel chat-panel--bot">
+            <p class="chat-panel-text chat-panel-text--bot">Здравствуйте! Я помощник CargoAitu. Чем могу помочь?</p>
+          </div>
+          <div class="chat-actions" id="chatQuickActions">
+            <button type="button" class="chat-action chat-action--primary" data-chat-quick="Создать заявку на перевозку груза">Создать заявку</button>
+            <button type="button" class="chat-action chat-action--outline" data-chat-quick="Как найти перевозчика на CargoAitu?">Найти перевозчика</button>
+            <button type="button" class="chat-action chat-action--outline" data-chat-quick="Проблема с моим заказом, что делать?">Проблема с заказом</button>
+            <button type="button" class="chat-action chat-action--ghost" data-chat-quick="Связаться с оператором поддержки">Связаться с оператором</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="chat-suggestions-bar" id="chatSuggestions" aria-hidden="true">
+      <div class="chat-suggestions-label">Часто спрашивают</div>
+      <div class="chat-suggestions-row">
+        <button type="button" class="chat-suggestion" data-chat-quick="Как подписать документ с ЭЦП на CargoAitu?">ЭЦП и документы</button>
+        <button type="button" class="chat-suggestion" data-chat-quick="Как подать предложение на заявку?">Ставки</button>
+        <button type="button" class="chat-suggestion" data-chat-quick="Контакты поддержки CargoAitu">Контакты</button>
+      </div>
+    </div>
+    <div class="chat-input-wrap">
+      <div class="chat-input-container">
+        <input type="text" class="chat-input" id="chatInput" placeholder="Напишите сообщение..." autocomplete="off" maxlength="2000" onkeydown="handleChatKeyPress(event)">
+        <button type="button" class="chat-send" onclick="sendChatMessage()" aria-label="Отправить сообщение">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal" id="logoutConfirmModal" style="display: none;">
+  <div class="modal-content modal-content-sm">
+    <div class="modal-header">
+      <h2>Подтверждение выхода</h2>
+      <button class="modal-close" onclick="closeLogoutConfirmModal()">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p>Вы уверены, что хотите выйти из системы?</p>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary" onclick="closeLogoutConfirmModal()">Отмена</button>
+      <button type="button" class="btn-danger" id="confirmLogoutBtn">Выйти</button>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal" id="paymentDetailsModal" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="paymentDetailsModalTitle">
+  <div class="modal-content pd-form-modal">
+    <div class="modal-header pd-form-modal__header">
+      <h2 id="paymentDetailsModalTitle">Платёжные реквизиты</h2>
+      <button type="button" class="modal-close" onclick="closePaymentDetailsModal()" aria-label="Закрыть">&times;</button>
+    </div>
+    <div class="modal-body pd-form-modal__body">
+      <p class="pd-form__legend"><span class="pd-form__req-mark">*</span> — обязательные поля</p>
+      <form id="paymentDetailsForm" novalidate>
+        <div class="pd-form__section">
+          <h3 class="pd-form__section-title">Основные реквизиты</h3>
+          <div class="pd-form__grid">
+            <div class="pd-form__field" data-field="recipient_name">
+              <label for="recipientName">Получатель <span class="required">*</span></label>
+              <input type="text" id="recipientName" name="recipient_name" required autocomplete="organization" maxlength="500" />
+              <span class="pd-form__error" id="recipientNameError" role="alert"></span>
+              <span class="pd-form__hint">ФИО / ТОО / ИП</span>
+            </div>
+            <div class="pd-form__field" data-field="bank_name">
+              <label for="bankName">Банк получателя <span class="required">*</span></label>
+              <input type="text" id="bankName" name="bank_name" required maxlength="300" />
+              <span class="pd-form__error" id="bankNameError" role="alert"></span>
+              <span class="pd-form__hint">Полное наименование банка</span>
+            </div>
+            <div class="pd-form__field" data-field="bank_bik">
+              <label for="bankBIK">БИК <span class="required">*</span></label>
+              <input type="text" id="bankBIK" name="bank_bik" required inputmode="numeric" pattern="[0-9]*" maxlength="8" autocomplete="off" />
+              <span class="pd-form__error" id="bankBIKError" role="alert"></span>
+              <span class="pd-form__hint">8 цифр</span>
+            </div>
+            <div class="pd-form__field" data-field="bank_account">
+              <label for="bankAccount">Расчётный счёт (IBAN) <span class="required">*</span></label>
+              <input type="text" id="bankAccount" name="bank_account" required inputmode="text" maxlength="29" autocomplete="off" spellcheck="false" />
+              <span class="pd-form__error" id="bankAccountError" role="alert"></span>
+              <span class="pd-form__hint">KZ + 18 цифр</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pd-form__section">
+          <h3 class="pd-form__section-title">Дополнительно</h3>
+          <div class="pd-form__grid pd-form__grid--extras">
+            <div class="pd-form__field" data-field="bank_corr_account">
+              <label for="bankCorrAccount">Корр. счёт</label>
+              <input type="text" id="bankCorrAccount" name="bank_corr_account" maxlength="50" autocomplete="off" />
+              <span class="pd-form__error" id="bankCorrAccountError" role="alert"></span>
+              <span class="pd-form__hint">При необходимости</span>
+            </div>
+            <div class="pd-form__field" data-field="kpp">
+              <label for="kpp">КПП (если РФ)</label>
+              <input type="text" id="kpp" name="kpp" maxlength="20" autocomplete="off" />
+              <span class="pd-form__error" id="kppError" role="alert"></span>
+              <span class="pd-form__hint">Только для РФ</span>
+            </div>
+            <div class="pd-form__field pd-form__field--currency" data-field="payment_currency">
+              <label for="paymentCurrencySelect">Валюта</label>
+              <select id="paymentCurrencySelect" name="payment_currency">
+                <option value="KZT">KZT (₸)</option>
+                <option value="RUB">RUB (₽)</option>
+                <option value="USD">USD ($)</option>
+                <option value="EUR">EUR (€)</option>
+              </select>
+              <span class="pd-form__error" id="paymentCurrencySelectError" role="alert"></span>
+              <span class="pd-form__hint">Счёт и документы</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pd-form__section">
+          <h3 class="pd-form__section-title">Юридическая информация</h3>
+          <div class="pd-form__grid pd-form__grid--legal">
+            <div class="pd-form__field pd-form__field--span" data-field="address">
+              <label for="address">Адрес</label>
+              <input type="text" id="address" name="address" maxlength="500" autocomplete="street-address" />
+              <span class="pd-form__error" id="addressError" role="alert"></span>
+              <span class="pd-form__hint">Юридический / почтовый</span>
+            </div>
+            <div class="pd-form__field" data-field="director_name">
+              <label for="directorName">ФИО руководителя</label>
+              <input type="text" id="directorName" name="director_name" maxlength="200" autocomplete="name" />
+              <span class="pd-form__error" id="directorNameError" role="alert"></span>
+              <span class="pd-form__hint">По желанию</span>
+            </div>
+            <div class="pd-form__field" data-field="accountant_name">
+              <label for="accountantName">ФИО бухгалтера</label>
+              <input type="text" id="accountantName" name="accountant_name" maxlength="200" autocomplete="name" />
+              <span class="pd-form__error" id="accountantNameError" role="alert"></span>
+              <span class="pd-form__hint">По желанию</span>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="pd-form-modal__footer">
+      <button type="button" class="pd-form__clear-link" id="clearPaymentDetailsBtn">Очистить форму</button>
+      <div class="pd-form-modal__footer-actions">
+        <button type="button" class="pd-form-modal__btn-cancel" onclick="closePaymentDetailsModal()">Отмена</button>
+        <button type="button" class="btn-login" id="savePaymentDetailsBtn">Сохранить</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal" id="paymentDetailsRequiredModal" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="pdRequiredTitle">
+  <div class="modal-content modal-content-sm pd-req-modal">
+    <button type="button" class="modal-close pd-req-modal__close" onclick="closePaymentDetailsRequiredModal()" aria-label="Закрыть">&times;</button>
+    <div class="pd-req-modal__inner">
+      <div class="pd-req-modal__icon-wrap" aria-hidden="true">
+        <svg class="pd-req-modal__icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+        </svg>
+      </div>
+      <div class="pd-req-modal__main">
+        <h2 id="pdRequiredTitle" class="pd-req-modal__title">Заполните платёжные реквизиты</h2>
+        <p class="pd-req-modal__lead">Чтобы создать счёт-фактуру, необходимо указать реквизиты получателя.</p>
+        <div class="pd-req-modal__missing">
+          <p class="pd-req-modal__missing-label">Не заполнено</p>
+          <ul class="pd-req-modal__list" id="missingFieldsList"></ul>
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions pd-req-modal__actions">
+      <button type="button" class="pd-req-modal__btn-cancel" onclick="closePaymentDetailsRequiredModal()">Отмена</button>
+      <button type="button" class="btn-login pd-req-modal__btn-primary" id="goToPaymentDetailsBtn">Перейти к заполнению →</button>
+    </div>
+  </div>
+</div>
+
+
+<div id="toastContainer" class="toast-container"></div>
+
+
+<script type="module">
+  window.loadNCALayer = function() {
+    if (window.NCALayerClient) {
+      return Promise.resolve();
+    }
+    
+    return import('https://cdn.skypack.dev/ncalayer-js-client@latest').then(({ NCALayerClient }) => {
+      window.NCALayerClient = NCALayerClient;
+      window.dispatchEvent(new CustomEvent('ncalayer-loaded'));
+      console.log('NCALayerClient загружен для подписания документов');
+    }).catch(error => {
+      console.warn('Не удалось загрузить NCALayerClient:', error);
+      throw error;
+    });
+  };
+</script>
+
+<script src="page-transitions.js?v=1" defer></script>
+<script src="script.js?v=4" defer></script>
+<script src="toast.js?v=1" defer></script>
+<script src="chat.js?v=4" defer></script>
+<script src="notifications.js?v=6" defer></script>
+<script src="maps.js?v=3" defer></script>
+<script src="payment-details.js?v=6" defer></script>
+<script src="egov-company.js?v=4" defer></script>
+<script>
+window.loadGoogleMaps = function() {
+  if (window.google && window.google.maps) {
+    if (typeof initGoogleMaps === 'function') {
+      initGoogleMaps();
+    }
+    return Promise.resolve();
+  }
+  
+  if (window.googleMapsLoading) {
+    return window.googleMapsLoading;
+  }
+  
+  window.googleMapsLoading = (async function() {
+    try {
+      const response = await fetch('https://cargoaitulogistic.onrender.com/api/google-maps-key');
+      if (!response.ok) {
+        throw new Error('Google Maps API ключ не найден');
+      }
+      
+      const data = await response.json();
+      const apiKey = data.key;
+      
+      return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places,geometry&callback=initGoogleMaps`;
+        script.async = true;
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+    } catch (error) {
+      console.warn('Не удалось загрузить Google Maps API:', error);
+      window.googleMapsLoading = null;
+      throw error;
+    }
+  })();
+  
+  return window.googleMapsLoading;
+};
+</script>
+</body>
+</html>

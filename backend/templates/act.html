@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Акт выполненных работ (форма Р-1)</title>
+<style>
+@page { size: A4; margin: 12mm 10mm 14mm 10mm; }
+body {
+  font-family: "DejaVu Sans", Arial, sans-serif;
+  font-size: 8.5pt;
+  line-height: 1.25;
+  color: #000;
+}
+.sheet { box-sizing: border-box; }
+@media screen {
+  body { margin: 0; padding: 16px; background: #d9d9d9; }
+  .sheet {
+    max-width: 210mm;
+    margin: 0 auto;
+    padding: 10mm 8mm;
+    background: #fff;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.18);
+  }
+}
+@media print {
+  body { margin: 0; padding: 0; background: #fff; }
+  .sheet { max-width: none; margin: 0; padding: 0; box-shadow: none; }
+}
+.appendix-top {
+  font-size: 8pt;
+  text-align: right;
+  margin-bottom: 6px;
+  line-height: 1.35;
+}
+.form-r {
+  text-align: center;
+  font-weight: bold;
+  font-size: 9pt;
+  margin: 4px 0 8px 0;
+}
+.platform-note {
+  text-align: center;
+  font-size: 7.5pt;
+  color: #555;
+  margin-bottom: 6px;
+}
+table.grid {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 8px;
+  table-layout: fixed;
+}
+table.grid td, table.grid th {
+  border: 1px solid #000;
+  padding: 3px 4px;
+  vertical-align: top;
+  word-wrap: break-word;
+}
+table.grid .lbl {
+  font-weight: bold;
+  width: 22%;
+  background: #f7f7f7;
+  font-size: 8pt;
+}
+table.grid .hint {
+  font-size: 7pt;
+  color: #333;
+  font-weight: normal;
+  display: block;
+  margin-top: 2px;
+}
+.meta-pair td { width: 50%; }
+.meta-pair .inner-label { font-size: 7.5pt; color: #333; }
+.act-title {
+  text-align: center;
+  font-weight: bold;
+  font-size: 10pt;
+  text-transform: uppercase;
+  margin: 10px 0 8px 0;
+  line-height: 1.3;
+}
+table.services {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 7.5pt;
+  margin-bottom: 6px;
+}
+table.services th, table.services td {
+  border: 1px solid #000;
+  padding: 4px 3px;
+  text-align: center;
+  vertical-align: middle;
+}
+table.services th {
+  font-weight: bold;
+  background: #eee;
+}
+table.services .col-name { text-align: left; width: 32%; }
+table.services .col-num { width: 4%; }
+table.services .td-left { text-align: left; }
+table.services .td-right { text-align: right; }
+.total-row td { font-weight: bold; }
+.notes {
+  font-size: 8pt;
+  margin: 8px 0;
+  text-align: justify;
+}
+.sign-area {
+  margin-top: 14px;
+  font-size: 8pt;
+}
+.sign-area table { width: 100%; border-collapse: collapse; }
+.sign-area td {
+  border: 1px solid #000;
+  padding: 6px 5px;
+  vertical-align: top;
+  width: 50%;
+}
+.sign-h { font-weight: bold; margin-bottom: 6px; }
+.sign-line {
+  border-bottom: 1px solid #000;
+  min-height: 18px;
+  margin: 4px 0;
+}
+.sign-meta { font-size: 7pt; color: #333; margin-top: 4px; }
+.edo-note {
+  font-size: 7.5pt;
+  color: #444;
+  margin-top: 12px;
+  text-align: justify;
+}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+<div class="appendix-top">
+  Приложение 50<br>
+  к приказу Министра финансов<br>
+  Республики Казахстан<br>
+  от 20 декабря 2012 года № 562
+</div>
+<div class="form-r">Форма Р-1</div>
+<p class="platform-note">Цифровая логистическая платформа «{{ platform_name }}»</p>
+
+<table class="grid">
+  <tr>
+    <td class="lbl">ИИН/БИН</td>
+    <td>{{ customer_bin_iin }} / {{ carrier_bin_iin }}</td>
+  </tr>
+  <tr>
+    <td class="lbl">Заказчик<span class="hint">полное наименование, адрес, данные о средствах связи</span></td>
+    <td>{{ customer_detail_line }}</td>
+  </tr>
+  <tr>
+    <td class="lbl">Исполнитель<span class="hint">полное наименование, адрес, данные о средствах связи</span></td>
+    <td>{{ carrier_detail_line }}</td>
+  </tr>
+</table>
+
+<p style="margin:6px 0;font-weight:bold;">{{ contract_ref_line }}</p>
+
+<table class="grid meta-pair">
+  <tr>
+    <td>
+      <span class="inner-label">Номер документа</span><br>
+      <strong>{{ act_number }}</strong>
+    </td>
+    <td>
+      <span class="inner-label">Дата составления</span><br>
+      <strong>{{ act_date }}</strong>
+    </td>
+  </tr>
+</table>
+
+<div class="act-title">
+  Акт выполненных работ (оказанных услуг)<br>
+  № {{ act_number }} от {{ act_date }}
+</div>
+
+<table class="services">
+  <thead>
+    <tr>
+      <th rowspan="2" class="col-num">Номер<br>по<br>порядку</th>
+      <th rowspan="2" class="col-name">Наименование работ (услуг) (в разрезе их подвидов в соответствии с технической спецификацией, заданием, графиком выполнения работ (услуг) при их наличии)</th>
+      <th rowspan="2">Дата выполнения работ (оказания услуг)</th>
+      <th rowspan="2">Сведения об отчёте о научных исследованиях, маркетинговых, консультационных и прочих услугах (при наличии)</th>
+      <th colspan="4">Выполнено работ (оказано услуг)</th>
+      <th colspan="2">Стоимость, в том числе НДС, в KZT</th>
+    </tr>
+    <tr>
+      <th>Единица<br>измерения</th>
+      <th>количество</th>
+      <th>цена за<br>единицу</th>
+      <th>всего<br>без НДС</th>
+      <th>ставка</th>
+      <th>сумма</th>
+    </tr>
+    <tr>
+      <th>1</th>
+      <th>2</th>
+      <th>3</th>
+      <th>4</th>
+      <th>5</th>
+      <th>6</th>
+      <th>7</th>
+      <th>8</th>
+      <th>8а</th>
+      <th>9</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td class="td-left">{{ service_description }}</td>
+      <td>{{ service_completion_date }}</td>
+      <td>—</td>
+      <td>{{ unit_measure }}</td>
+      <td>{{ quantity }}</td>
+      <td class="td-right">{{ unit_price }}</td>
+      <td class="td-right">{{ line_amount }}</td>
+      <td>{{ vat_rate_label }}</td>
+      <td class="td-right">{{ vat_amount }}</td>
+    </tr>
+    <tr class="total-row">
+      <td colspan="7" class="td-right">Итого</td>
+      <td class="td-right">{{ line_amount }}</td>
+      <td>—</td>
+      <td class="td-right">{{ vat_amount }}</td>
+    </tr>
+  </tbody>
+</table>
+
+<p class="notes"><strong>Сведения об использовании запасов, полученных от заказчика</strong><br>
+наименование, количество, стоимость: {{ inventory_line }}</p>
+
+<p class="notes"><strong>Приложение:</strong> Перечень документации, в том числе отчёт(ы) о маркетинговых, научных исследованиях, консультационных и прочих услугах (при наличии) на <u>&nbsp;&nbsp;{{ appendix_pages }}&nbsp;&nbsp;</u> стр.</p>
+
+<div class="sign-area">
+  <table>
+    <tr>
+      <td>
+        <div class="sign-h">Сдал (Исполнитель)</div>
+        <div class="sign-meta">должность</div>
+        <div class="sign-line">{{ carrier_position }}</div>
+        <div class="sign-meta">подпись</div>
+        <div class="sign-line"></div>
+        <div class="sign-meta">расшифровка подписи</div>
+        <div class="sign-line">{{ carrier_signatory }}</div>
+        <p><strong>М.П.</strong> &nbsp; Дата подписания (принятия) работ (услуг): _______________</p>
+      </td>
+      <td>
+        <div class="sign-h">Принял (Заказчик)</div>
+        <div class="sign-meta">должность</div>
+        <div class="sign-line">{{ customer_position }}</div>
+        <div class="sign-meta">подпись</div>
+        <div class="sign-line"></div>
+        <div class="sign-meta">расшифровка подписи</div>
+        <div class="sign-line">{{ customer_signatory }}</div>
+        <p><strong>М.П.</strong></p>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<p class="edo-note">Настоящий акт может быть подписан электронной цифровой подписью и признаётся равнозначным документу на бумажном носителе в соответствии с законодательством Республики Казахстан.</p>
+
+</div>
+</body>
+</html>

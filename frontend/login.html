@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход через ЭЦП - CargoAitu</title>
+    
+    <link rel="stylesheet" href="styles.css?v=33">
+    
+    
+    <script type="module">
+        import { NCALayerClient } from 'https://cdn.skypack.dev/ncalayer-js-client@latest';
+        window.NCALayerClient = NCALayerClient;
+        window.dispatchEvent(new CustomEvent('ncalayer-loaded'));
+        console.log('NCALayerClient загружен');
+    </script>
+    
+    
+    <script>
+        const originalConsoleError = console.error;
+        console.error = function(...args) {
+            const message = args.join(' ');
+            if (message.includes('24680') || message.includes('ERR_CONNECTION_REFUSED')) {
+                return;
+            }
+            originalConsoleError.apply(console, args);
+        };
+        
+        window.addEventListener('error', function(event) {
+            if (event.message && (event.message.includes('24680') || event.message.includes('ERR_CONNECTION_REFUSED'))) {
+                event.preventDefault();
+                return true;
+            }
+        }, true);
+    </script>
+</head>
+<body class="login-page page-loading">
+    <header class="header">
+        <div class="header-inner">
+            <div class="logo">CargoAitu</div>
+            <div class="header-actions">
+                <a href="index.html" class="btn-login" style="text-decoration: none;">На главную</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="main login-main">
+        <div class="login-container">
+            <div class="login-card">
+                <div class="login-header">
+                    <h1 class="login-title">Вход через ЭЦП</h1>
+                    <p class="login-subtitle">
+                        Используйте ЭЦП через NCALayer для входа в систему. 
+                        Система автоматически определит, зарегистрирован ли пользователь.
+                    </p>
+                </div>
+
+                
+                <div id="ncalayerStatus" class="ncalayer-status"></div>
+
+                
+                <div id="authMessage" class="form-message"></div>
+
+                
+                <button type="button" class="login-submit-btn" id="loginBtn">
+                    <span id="loginText">Войти через ЭЦП</span>
+                    <span id="loginLoader" class="loader" style="display: none;"></span>
+                </button>
+
+                <div class="login-footer">
+                    <p><a href="index.html">Вернуться на главную</a></p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="page-transitions.js?v=1"></script>
+    <script src="login.js?v=2"></script>
+</body>
+</html>

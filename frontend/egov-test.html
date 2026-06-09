@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест API data.egov.kz - CargoAinur</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .test-container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 30px;
+        }
+        .test-form {
+            background: var(--surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .btn-test {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-test:hover {
+            background: var(--accent-hover);
+        }
+        .btn-test:disabled {
+            background: var(--text-muted);
+            cursor: not-allowed;
+        }
+        .result-container {
+            background: var(--surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 24px;
+            display: none;
+        }
+        .result-container.show {
+            display: block;
+        }
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        .result-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .result-source {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+        .result-data {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+        .result-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .result-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+        .result-value {
+            font-size: 14px;
+            color: var(--text-primary);
+            padding: 8px 12px;
+            background: var(--surface-muted);
+            border-radius: 6px;
+        }
+        .error-message {
+            background: #fee;
+            border: 1px solid #fcc;
+            color: #c33;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+        }
+        .success-message {
+            background: #efe;
+            border: 1px solid #cfc;
+            color: #3c3;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Тест API data.egov.kz</h1>
+        <p style="color: var(--text-muted); margin-bottom: 24px;">
+            Проверка работы интеграции с порталом открытых данных для получения информации о компаниях по БИН
+        </p>
+
+        <div class="test-form">
+            <div class="form-group">
+                <label for="binInput">БИН компании (12 цифр)</label>
+                <input 
+                    type="text" 
+                    id="binInput" 
+                    placeholder="Например: 123456789012" 
+                    maxlength="12"
+                    pattern="[0-9]{12}"
+                >
+            </div>
+            <button class="btn-test" id="testBtn">
+                Получить данные
+            </button>
+        </div>
+
+        <div id="resultContainer" class="result-container">
+            <div class="result-header">
+                <div>
+                    <div class="result-title" id="resultTitle">Результат</div>
+                    <div class="result-source" id="resultSource"></div>
+                </div>
+            </div>
+            <div id="resultContent"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://cargoaitulogistic.onrender.com';
+
+        async function testEgovAPI() {
+            const binInput = document.getElementById('binInput');
+            const testBtn = document.getElementById('testBtn');
+            const resultContainer = document.getElementById('resultContainer');
+            const resultContent = document.getElementById('resultContent');
+            const resultTitle = document.getElementById('resultTitle');
+            const resultSource = document.getElementById('resultSource');
+
+            const bin = binInput.value.trim();
+            if (!bin) {
+                alert('Введите БИН компании');
+                return;
+            }
+
+            if (bin.length !== 12 || !/^\d{12}$/.test(bin)) {
+                alert('БИН должен содержать 12 цифр');
+                return;
+            }
+            testBtn.disabled = true;
+            testBtn.textContent = 'Загрузка...';
+            resultContainer.classList.add('show');
+            resultContent.innerHTML = '<div class="loading">⏳ Запрос к API data.egov.kz...</div>';
+
+            try {
+                const user = JSON.parse(localStorage.getItem('user') || '{}');
+                const userId = user.id;
+
+                if (!userId) {
+                    throw new Error('Необходимо войти в систему');
+                }
+                const response = await fetch(`${API_URL}/api/egov/company/${bin}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-User-Id': userId.toString()
+                    }
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.detail || 'Ошибка при получении данных');
+                }
+                if (data.success && data.data) {
+                    const company = data.data;
+                    
+                    resultTitle.textContent = 'Данные получены успешно';
+                    resultSource.textContent = `Источник: ${data.source || 'data.egov.kz'}`;
+                    
+                    resultContent.innerHTML = `
+                        <div class="success-message">
+                            Данные успешно получены с портала открытых данных
+                        </div>
+                        <div class="result-data" style="margin-top: 20px;">
+                            <div class="result-item">
+                                <div class="result-label">БИН</div>
+                                <div class="result-value">${company.bin || '—'}</div>
+                            </div>
+                            <div class="result-item">
+                                <div class="result-label">Наименование (рус.)</div>
+                                <div class="result-value">${company.nameru || '—'}</div>
+                            </div>
+                            <div class="result-item">
+                                <div class="result-label">Наименование (каз.)</div>
+                                <div class="result-value">${company.namekz || '—'}</div>
+                            </div>
+                            <div class="result-item">
+                                <div class="result-label">Статус</div>
+                                <div class="result-value">${company.statusru || '—'}</div>
+                            </div>
+                            <div class="result-item" style="grid-column: 1 / -1;">
+                                <div class="result-label">Адрес (рус.)</div>
+                                <div class="result-value">${company.addressru || '—'}</div>
+                            </div>
+                            <div class="result-item" style="grid-column: 1 / -1;">
+                                <div class="result-label">Адрес (каз.)</div>
+                                <div class="result-value">${company.addresskz || '—'}</div>
+                            </div>
+                            <div class="result-item">
+                                <div class="result-label">ФИО руководителя</div>
+                                <div class="result-value">${company.director || '—'}</div>
+                            </div>
+                            <div class="result-item">
+                                <div class="result-label">Дата регистрации</div>
+                                <div class="result-value">${company.datereg || '—'}</div>
+                            </div>
+                            <div class="result-item" style="grid-column: 1 / -1;">
+                                <div class="result-label">Вид деятельности (рус.)</div>
+                                <div class="result-value">${company.okedru || '—'}</div>
+                            </div>
+                            <div class="result-item" style="grid-column: 1 / -1;">
+                                <div class="result-label">Вид деятельности (каз.)</div>
+                                <div class="result-value">${company.okedkz || '—'}</div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    throw new Error('Данные не получены');
+                }
+
+            } catch (error) {
+                resultTitle.textContent = 'Ошибка';
+                resultSource.textContent = '';
+                resultContent.innerHTML = `
+                    <div class="error-message">
+                        <strong>Ошибка:</strong> ${error.message}
+                    </div>
+                `;
+            } finally {
+                testBtn.disabled = false;
+                testBtn.textContent = 'Получить данные';
+            }
+        }
+        document.getElementById('testBtn').addEventListener('click', testEgovAPI);
+        document.getElementById('binInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                testEgovAPI();
+            }
+        });
+    </script>
+</body>
+</html>

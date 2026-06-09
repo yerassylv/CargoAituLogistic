@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Уведомления — CargoAitu</title>
+  <link rel="stylesheet" href="styles.css?v=31" />
+</head>
+<body class="page-loading">
+
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">CargoAitu</div>
+    <nav class="nav" id="mainNav">
+      <a href="index.html" class="nav-item">Заявки</a>
+      <a href="index.html#organizations" class="nav-item">Организации</a>
+      <a href="index.html#partners" class="nav-item">Партнёры</a>
+    </nav>
+    <div class="header-actions">
+      <div class="search">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M7 12A5 5 0 1 0 7 2a5 5 0 0 0 0 10zM13 13l-3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <input type="text" placeholder="Найти заявку..." />
+      </div>
+      <div id="userHeaderInfo" class="user" style="display: none;">
+        <div class="user-profile-trigger" id="userProfileTrigger">
+          <span class="user-name-main" id="headerUserName">-</span>
+          <span class="user-name-full" id="headerUserFullName">-</span>
+          <svg class="user-caret" width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M2 4L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div id="userProfileDropdown" class="user-profile-dropdown" style="display: none;">
+          <div class="dropdown-header">
+            <div class="dropdown-user-name" id="dropdownUserName">-</div>
+            <div class="dropdown-user-role" id="dropdownUserRole">-</div>
+          </div>
+          <div class="dropdown-menu">
+            <a href="trucks.html" class="dropdown-item">
+              <span>Машины</span>
+            </a>
+            <a href="drivers.html" class="dropdown-item">
+              <span>Водители</span>
+            </a>
+            <a href="messages.html" class="dropdown-item" id="messagesMenuItem">
+              <span>Уведомления</span>
+              <span class="dropdown-badge" id="messagesBadge" style="display: none;">0</span>
+            </a>
+            <a href="index.html" class="dropdown-item" onclick="event.preventDefault(); localStorage.setItem('openPaymentDetailsModal','true'); window.location.href='index.html';">
+              <span>Платёжные реквизиты</span>
+            </a>
+            <a href="egov-company.html" class="dropdown-item" target="_blank" rel="noopener noreferrer">
+              <span>Проверить компанию</span>
+            </a>
+            <div class="dropdown-divider"></div>
+            <a href="#" class="dropdown-item dropdown-item-danger" id="logoutMenuItem">
+              <span>Выйти</span>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div id="headerAuthButtons">
+        <a href="login.html" class="btn-login">Войти</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="main nc-main">
+  <div class="content nc-content">
+    <div class="nc-page">
+      <header class="nc-head">
+        <div class="nc-head-text">
+          <h1 class="nc-title-page">Уведомления</h1>
+          <p class="nc-subtitle-page">События и действия по заявкам</p>
+        </div>
+        <button type="button" class="nc-mark-all nc-mark-all--ghost" onclick="markAllNotificationsRead()" id="markAllReadBtn">
+          Отметить все как прочитанные
+        </button>
+      </header>
+
+      <div class="nc-toolbar" role="tablist" aria-label="Фильтр уведомлений">
+        <div class="nc-tabs">
+          <button type="button" class="nc-tab nc-tab--active" data-nc-tab="all" role="tab" aria-selected="true">Все</button>
+          <button type="button" class="nc-tab" data-nc-tab="action" role="tab" aria-selected="false">Требуют действия</button>
+          <button type="button" class="nc-tab" data-nc-tab="bids" role="tab" aria-selected="false">Ставки</button>
+          <button type="button" class="nc-tab" data-nc-tab="documents" role="tab" aria-selected="false">Документы</button>
+        </div>
+      </div>
+
+      <div class="nc-search-wrap">
+        <div class="nc-search">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+            <path d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zM14 14l-3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <input type="search" id="messagesSearchInput" placeholder="Поиск по уведомлениям…" autocomplete="off" oninput="filterMessages()" />
+          <button type="button" class="nc-search-clear" id="messagesSearchClear" onclick="clearSearch()" style="display: none;" aria-label="Очистить">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M12 4L4 12M4 4l8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="nc-list" id="messagesList" aria-live="polite"></div>
+    </div>
+  </div>
+</main>
+
+<div class="modal" id="logoutConfirmModal" style="display: none;">
+  <div class="modal-content modal-content-sm">
+    <div class="modal-header">
+      <h2>Подтверждение выхода</h2>
+      <button class="modal-close" onclick="closeLogoutConfirmModal()">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p>Вы уверены, что хотите выйти из системы?</p>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary" onclick="closeLogoutConfirmModal()">Отмена</button>
+      <button type="button" class="btn-danger" id="confirmLogoutBtn">Выйти</button>
+    </div>
+  </div>
+</div>
+
+<script src="page-transitions.js?v=1"></script>
+<script src="script.js?v=3"></script>
+<script src="notifications.js?v=5"></script>
+</body>
+</html>

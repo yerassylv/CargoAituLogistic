@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Договор о партнёрстве — CargoAitu</title>
+  <style>
+    body { font-family: Georgia, 'Times New Roman', serif; max-width: 42rem; margin: 1.5rem auto; padding: 0 1rem; line-height: 1.55; color: #1c1917; font-size: 15px; }
+    h1 { font-size: 1.35rem; font-weight: 700; margin-bottom: 0.75rem; border-bottom: 2px solid #1c1917; padding-bottom: 0.5rem; }
+    h2 { font-size: 1.05rem; margin-top: 1.25rem; margin-bottom: 0.5rem; }
+    p { margin: 0.6rem 0; }
+    ul { margin: 0.5rem 0; padding-left: 1.25rem; }
+    .meta { font-size: 0.85rem; color: #57534e; margin-bottom: 1rem; }
+    .parties { background: #f5f5f4; border: 1px solid #d6d3d1; padding: 0.75rem 1rem; margin: 1rem 0; }
+    .muted { color: #78716c; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <h1>Договор о сотрудничестве (партнёрстве)</h1>
+  <p class="meta">Платформа автоматизации грузоперевозок CargoAitu. Дата создания запроса: {{ created_at.strftime('%d.%m.%Y %H:%M') if created_at else '—' }} UTC.</p>
+
+  <div class="parties">
+    <p><strong>Сторона 1 (инициатор записи в реестре партнёрств):</strong><br />
+      {{ company1_name }}{% if company1_bin %}<br /><span class="muted">БИН: {{ company1_bin }}</span>{% endif %}
+    </p>
+    <p><strong>Сторона 2:</strong><br />
+      {{ company2_name }}{% if company2_bin %}<br /><span class="muted">БИН: {{ company2_bin }}</span>{% endif %}
+    </p>
+  </div>
+
+  <h2>1. Предмет</h2>
+  <p>Стороны заключают настоящий договор о партнёрстве в целях использования платформы CargoAitu: обмен заявками на перевозку, участие в торгах (аукционах) и иное взаимодействие, предусмотренное функционалом сервиса.</p>
+
+  <h2>2. Порядок заключения</h2>
+  <p>Договор считается заключённым после подписания электронной цифровой подписью (ЭЦП) обеими сторонами через приложение NCALayer в интерфейсе платформы. Каждая сторона подтверждает, что действует от имени своей организации (или как уполномоченное лицо) и что ЭЦП принадлежит подписывающему.</p>
+
+  <h2>3. Ответственность и данные</h2>
+  <p>Стороны самостоятельно несут ответственность за достоверность сведений о компании (в т.ч. БИН, реквизиты) в личном кабинете. Платформа предоставляет техническую возможность партнёрства и не выступает стороной грузового договора между заказчиком и перевозчиком.</p>
+
+  <h2>4. Расторжение</h2>
+  <p>Партнёрство на платформе может быть прекращено по соглашению сторон или в случаях, предусмотренных правилами сервиса и законодательством Республики Казахстан.</p>
+
+  <p class="muted" style="margin-top: 1.5rem;">Перед подписанием внимательно прочитайте текст. При согласии подпишите документ ЭЦП в следующем шаге.</p>
+</body>
+</html>

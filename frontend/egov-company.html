@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Проверка компании - CargoAinur</title>
+    <link rel="stylesheet" href="styles.css?v=19">
+    <style>
+        .egov-sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        body {
+            background-color: #f1f5f9;
+            min-height: 100vh;
+        }
+
+        .egov-page {
+            max-width: 1160px;
+            margin: 0 auto;
+            padding: 40px 28px 64px;
+        }
+
+        
+        .egov-hero {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 28px 32px 24px;
+            margin-bottom: 28px;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+        }
+        .egov-hero__title {
+            font-size: clamp(24px, 2.8vw, 30px);
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0 0 10px;
+            letter-spacing: -0.03em;
+            line-height: 1.2;
+        }
+        .egov-hero__lead {
+            font-size: 15px;
+            color: #64748b;
+            margin: 0 0 22px;
+            line-height: 1.5;
+            max-width: 52ch;
+        }
+        .egov-hero__row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: stretch;
+            gap: 12px;
+        }
+        .egov-hero__input {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 15px;
+            background: #fff;
+            color: #0f172a;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .egov-hero__input::placeholder {
+            color: #94a3b8;
+        }
+        .egov-hero__input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+        .egov-hero__btn {
+            flex-shrink: 0;
+            padding: 12px 22px;
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background 0.15s;
+        }
+        .egov-hero__btn:hover:not(:disabled) {
+            background: #1d4ed8;
+        }
+        .egov-hero__btn:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
+        .egov-hero__hint {
+            margin: 16px 0 0;
+            font-size: 12px;
+            color: #94a3b8;
+            line-height: 1.55;
+            max-width: 70ch;
+        }
+        .egov-hero__hint a {
+            color: #2563eb;
+            text-decoration: none;
+        }
+        .egov-hero__hint a:hover {
+            text-decoration: underline;
+        }
+
+        .egov-result-shell {
+            display: none;
+        }
+        .egov-result-shell.show {
+            display: block;
+        }
+
+        
+        .egov-report {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 28px 32px 36px;
+            box-shadow: 0 4px 24px rgba(15, 23, 42, 0.06);
+        }
+        .egov-report__head {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 14px 20px;
+            margin-bottom: 12px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .egov-report__head-main {
+            flex: 1;
+            min-width: 0;
+        }
+        .egov-report__name {
+            font-size: clamp(22px, 2.2vw, 24px);
+            font-weight: 700;
+            color: #0f172a;
+            line-height: 1.25;
+            letter-spacing: -0.03em;
+            margin: 0 0 8px;
+            word-wrap: break-word;
+        }
+        .egov-report__bin {
+            font-size: 14px;
+            color: #64748b;
+            margin: 0;
+            font-weight: 500;
+            letter-spacing: -0.01em;
+        }
+        .egov-badge {
+            flex-shrink: 0;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 5px 11px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            color: #475569;
+            background: #f8fafc;
+        }
+        .egov-badge--warn {
+            border-color: #fcd34d;
+            color: #92400e;
+            background: #fffbeb;
+        }
+        .egov-report__source {
+            font-size: 12px;
+            color: #94a3b8;
+            margin: 0 0 28px;
+            line-height: 1.45;
+            font-weight: 500;
+        }
+        .egov-report__alert {
+            font-size: 13px;
+            color: #92400e;
+            line-height: 1.55;
+            margin: 0 0 28px;
+            padding: 0 0 0 12px;
+            border-left: 3px solid #f59e0b;
+            background: transparent;
+        }
+
+        .egov-report__section {
+            margin-top: 32px;
+        }
+        .egov-report__section:first-of-type {
+            margin-top: 0;
+        }
+        .egov-report__section-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #475569;
+            letter-spacing: -0.02em;
+            margin: 0 0 14px;
+        }
+        .egov-report__grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px 32px;
+        }
+        .egov-kv {
+            min-width: 0;
+        }
+        .egov-kv--full {
+            grid-column: 1 / -1;
+        }
+        .egov-kv__label {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            color: #64748b;
+            margin-bottom: 6px;
+            line-height: 1.35;
+        }
+        .egov-kv__val {
+            font-size: 15px;
+            font-weight: 500;
+            color: #0f172a;
+            line-height: 1.55;
+            margin: 0;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+        }
+        .egov-kv__val--muted {
+            color: #94a3b8;
+            font-weight: 400;
+        }
+        .egov-kv__val--multiline {
+            line-height: 1.7;
+            white-space: pre-wrap;
+        }
+
+        .egov-loading {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            text-align: center;
+            color: #64748b;
+            padding: 40px 24px;
+            font-size: 14px;
+            box-shadow: 0 4px 24px rgba(15, 23, 42, 0.06);
+        }
+        .egov-error {
+            font-size: 14px;
+            color: #b45309;
+            line-height: 1.55;
+            padding: 16px 18px;
+            border-radius: 10px;
+            border: 1px solid #fed7aa;
+            background: #fff;
+        }
+
+        @media (max-width: 720px) {
+            .egov-page {
+                padding: 24px 16px 48px;
+            }
+            .egov-hero {
+                padding: 20px 18px 18px;
+            }
+            .egov-hero__row {
+                flex-direction: column;
+            }
+            .egov-hero__btn {
+                width: 100%;
+            }
+            .egov-report {
+                padding: 22px 18px 28px;
+            }
+            .egov-report__grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="egov-page">
+        <section class="egov-hero" aria-labelledby="egovHeroTitle">
+            <h1 id="egovHeroTitle" class="egov-hero__title">Проверка компании</h1>
+            <p class="egov-hero__lead">Введите БИН или ИИН, чтобы получить официальные данные</p>
+            <div class="egov-hero__row">
+                <label class="egov-sr-only" for="binInput">БИН или ИИН (12 цифр)</label>
+                <input
+                    type="text"
+                    id="binInput"
+                    class="egov-hero__input"
+                    placeholder="Например: 020540004648"
+                    maxlength="12"
+                    pattern="[0-9]{12}"
+                    inputmode="numeric"
+                    autocomplete="off"
+                />
+                <button type="button" class="egov-hero__btn" id="checkBtn">Проверить компанию</button>
+            </div>
+            <p class="egov-hero__hint">
+                Для юрлиц и ИП обычно указывается БИН. Данные запрашиваются через открытый API
+                <a href="https://data.egov.kz" target="_blank" rel="noopener noreferrer">data.egov.kz</a>;
+                не все типы номеров могут поддерживаться.
+            </p>
+        </section>
+
+        <div id="resultContainer" class="egov-result-shell">
+            <div id="resultContent"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://cargoaitulogistic.onrender.com';
+
+        function escapeHtml(s) {
+            if (s == null || s === '') return '';
+            return String(s)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function formatRegDate(raw) {
+            if (raw == null || raw === '') return '—';
+            const s = String(raw).trim();
+            const m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+            if (m) {
+                const d = new Date(parseInt(m[1], 10), parseInt(m[2], 10) - 1, parseInt(m[3], 10));
+                if (!isNaN(d.getTime())) {
+                    return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+                }
+            }
+            return escapeHtml(s);
+        }
+
+        function kvRow(label, value, multiline, fullWidth) {
+            const empty = value == null || String(value).trim() === '';
+            const display = empty ? '—' : escapeHtml(String(value));
+            const muted = empty ? ' egov-kv__val--muted' : '';
+            const multi = multiline ? ' egov-kv__val--multiline' : '';
+            const full = fullWidth ? ' egov-kv--full' : '';
+            return (
+                '<div class="egov-kv' + full + '">' +
+                '<span class="egov-kv__label">' + escapeHtml(label) + '</span>' +
+                '<p class="egov-kv__val' + muted + multi + '">' + display + '</p>' +
+                '</div>'
+            );
+        }
+
+        function kvRowDate(label, rawDate) {
+            const formatted = formatRegDate(rawDate);
+            const empty = formatted === '—';
+            const muted = empty ? ' egov-kv__val--muted' : '';
+            return (
+                '<div class="egov-kv">' +
+                '<span class="egov-kv__label">' + escapeHtml(label) + '</span>' +
+                '<p class="egov-kv__val' + muted + '">' + formatted + '</p>' +
+                '</div>'
+            );
+        }
+
+        function buildCompanyReportHtml(company) {
+            const displayName = (company.nameru || company.namekz || '').trim() || '—';
+            const isLiquidated =
+                company.statusru &&
+                (company.statusru.toLowerCase().includes('ликвидирован') ||
+                    company.statusru.toLowerCase().includes('прекращен'));
+            const badgeClass = isLiquidated ? 'egov-badge egov-badge--warn' : 'egov-badge';
+            const badgeText = isLiquidated ? 'Недействующая' : 'Действующая';
+            const binLine = company.bin ? 'БИН ' + escapeHtml(String(company.bin)) : '—';
+
+            let html = '';
+            html += '<article class="egov-report">';
+            html += '<header class="egov-report__head">';
+            html += '<div class="egov-report__head-main">';
+            html += '<h2 class="egov-report__name">' + escapeHtml(displayName) + '</h2>';
+            html += '<p class="egov-report__bin">' + binLine + '</p>';
+            html += '</div>';
+            html += '<div class="' + badgeClass + '">' + badgeText + '</div>';
+            html += '</header>';
+            html += '<p class="egov-report__source">Данные получены из data.egov.kz</p>';
+
+            if (isLiquidated && company.statusru) {
+                html +=
+                    '<div class="egov-report__alert">Компания в статусе «' +
+                    escapeHtml(company.statusru) +
+                    '». Использование данных для платёжных реквизитов может быть ограничено.</div>';
+            }
+
+            html += '<section class="egov-report__section"><h3 class="egov-report__section-title">Основное</h3><div class="egov-report__grid">';
+            html += kvRow('Статус', company.statusru, false, false);
+            html += kvRowDate('Дата регистрации', company.datereg);
+            html += '</div></section>';
+
+            html += '<section class="egov-report__section"><h3 class="egov-report__section-title">Наименование</h3><div class="egov-report__grid">';
+            html += kvRow('Полное наименование (рус.)', company.nameru, true, true);
+            html += kvRow('Полное наименование (каз.)', company.namekz, true, true);
+            html += '</div></section>';
+
+            html += '<section class="egov-report__section"><h3 class="egov-report__section-title">Адрес</h3><div class="egov-report__grid">';
+            html += kvRow('Юридический адрес (рус.)', company.addressru, true, true);
+            html += kvRow('Юридический адрес (каз.)', company.addresskz, true, true);
+            html += '</div></section>';
+
+            html += '<section class="egov-report__section"><h3 class="egov-report__section-title">Руководитель</h3><div class="egov-report__grid">';
+            html += kvRow('ФИО руководителя', company.director, false, true);
+            html += '</div></section>';
+
+            html += '<section class="egov-report__section"><h3 class="egov-report__section-title">Вид деятельности</h3><div class="egov-report__grid">';
+            html += kvRow('Вид деятельности (рус.)', company.okedru, true, true);
+            html += kvRow('Вид деятельности (каз.)', company.okedkz, true, true);
+            html += '</div></section>';
+
+            html += '</article>';
+            return html;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const binInput = document.getElementById('binInput');
+            const checkBtn = document.getElementById('checkBtn');
+            const resultContainer = document.getElementById('resultContainer');
+            const resultContent = document.getElementById('resultContent');
+
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            if (user.iin && /^\d{12}$/.test(user.iin)) {
+                binInput.value = user.iin;
+            }
+
+            async function checkCompany() {
+                const bin = binInput.value.trim();
+
+                if (!bin) {
+                    alert('Введите БИН или ИИН');
+                    binInput.focus();
+                    return;
+                }
+
+                if (bin.length !== 12 || !/^\d{12}$/.test(bin)) {
+                    alert('БИН/ИИН должен содержать 12 цифр');
+                    binInput.focus();
+                    return;
+                }
+
+                checkBtn.disabled = true;
+                checkBtn.textContent = 'Проверка…';
+                resultContainer.classList.add('show');
+                resultContent.innerHTML = '<div class="egov-loading">Запрос к data.egov.kz…</div>';
+
+                try {
+                    const userId = user.id;
+
+                    if (!userId) {
+                        throw new Error('Необходимо войти в систему');
+                    }
+
+                    const response = await fetch(`${API_URL}/api/egov/company/${bin}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-User-Id': userId.toString()
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(data.detail || 'Ошибка при получении данных');
+                    }
+
+                    if (data.success && data.data) {
+                        const company = data.data;
+
+                        resultContent.innerHTML = buildCompanyReportHtml(company);
+
+                        localStorage.setItem(
+                            'verifiedCompany',
+                            JSON.stringify({
+                                bin: company.bin,
+                                name: company.nameru,
+                                verifiedAt: new Date().toISOString()
+                            })
+                        );
+
+                        if (company.bin && !user.bin) {
+                            try {
+                                const updateResponse = await fetch(`${API_URL}/api/users/${user.id}/bin`, {
+                                    method: 'PUT',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-User-Id': user.id.toString()
+                                    },
+                                    body: JSON.stringify({ bin: company.bin })
+                                });
+                                if (updateResponse.ok) {
+                                    user.bin = company.bin;
+                                    localStorage.setItem('user', JSON.stringify(user));
+                                }
+                            } catch (e) {
+                                console.warn('Не удалось сохранить БИН в профиль:', e);
+                            }
+                        }
+                    } else {
+                        throw new Error('Данные не получены');
+                    }
+                } catch (error) {
+                    console.error('Ошибка проверки компании:', error);
+                    resultContent.innerHTML =
+                        '<div class="egov-report"><div class="egov-error">' +
+                        '<strong>Не удалось выполнить проверку.</strong> ' +
+                        escapeHtml(error.message || 'Неизвестная ошибка') +
+                        '</div></div>';
+                } finally {
+                    checkBtn.disabled = false;
+                    checkBtn.textContent = 'Проверить компанию';
+                }
+            }
+
+            checkBtn.addEventListener('click', checkCompany);
+
+            binInput.addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    checkCompany();
+                }
+            });
+
+            binInput.focus();
+        });
+    </script>
+    <script src="toast.js"></script>
+</body>
+</html>
