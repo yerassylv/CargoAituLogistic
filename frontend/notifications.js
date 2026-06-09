@@ -3,7 +3,7 @@ let allNotifications = [];
 let currentTab = "all";
 
 function notificationsApiBase() {
-    const b = typeof API_URL !== "undefined" && API_URL ? String(API_URL).replace(/\/$/, "") : "https://cargoplatform.onrender.com";
+    const b = typeof API_URL !== "undefined" && API_URL ? String(API_URL).replace(/\/$/, "") : "https://cargoaitulogistic.onrender.com";
     return `${b}/api`;
 }
 

@@ -1,4 +1,4 @@
-const TRUCKS_API_URL = typeof API_URL !== "undefined" ? API_URL : "https://cargoplatform.onrender.com";
+const TRUCKS_API_URL = typeof API_URL !== "undefined" ? API_URL : "https://cargoaitulogistic.onrender.com";
 
 var VEHICLE_ENUMS_FALLBACK = {
     vehicle_composition: [ {

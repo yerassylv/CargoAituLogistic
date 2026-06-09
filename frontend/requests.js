@@ -120,7 +120,7 @@ function getMetaBaseUrl() {
     if (typeof API_URL !== "undefined" && API_URL) {
         return API_URL.replace(/\/$/, "");
     }
-    return "https://cargoplatform.onrender.com";
+    return "https://cargoaitulogistic.onrender.com";
 }
 
 async function loadRequestBodyTypeOptionsFromMeta() {

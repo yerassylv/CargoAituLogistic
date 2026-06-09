@@ -208,7 +208,7 @@ function showUserProfile() {
                 localStorage.removeItem("returnToPaymentDetails");
                 setTimeout(async () => {
                     try {
-                        const apiUrl = typeof API_URL !== "undefined" ? API_URL : "https://cargoplatform.onrender.com";
+                        const apiUrl = typeof API_URL !== "undefined" ? API_URL : "https://cargoaitulogistic.onrender.com";
                         const userResponse = await fetch(`${apiUrl}/api/users/${user.id}`, {
                             headers: {
                                 "X-User-Id": user.id.toString()

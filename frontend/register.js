@@ -1,4 +1,4 @@
-const API_URL = "https://cargoplatform.onrender.com";
+const API_URL = "https://cargoaitulogistic.onrender.com";
 
 const fileStep = document.getElementById("fileStep");
 

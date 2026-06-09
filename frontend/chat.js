@@ -6,7 +6,7 @@ function getChatApiBase() {
     if (typeof API_URL !== "undefined" && API_URL) {
         return String(API_URL).replace(/\/$/, "");
     }
-    return "https://cargoplatform.onrender.com";
+    return "https://cargoaitulogistic.onrender.com";
 }
 
 function chatRandomDelayMs() {
