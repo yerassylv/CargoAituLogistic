@@ -3028,6 +3028,7 @@ async def verify_power_of_attorney_signature(contract_id: int, request: VerifyRe
         print(f'Ошибка при верификации подписи доверенности: {error_details}')
         raise HTTPException(status_code=500, detail=f'Ошибка при верификации подписи: {str(e)}')
 
+@app.get('/api/contracts/{file_path:path}')
 @app.get('/contracts/{file_path:path}')
 async def get_contract_document(file_path: str, db: Session=Depends(get_db), user_id: int=Depends(get_current_user_id)):
     """Получение документа контракта (включая подписанные документы)"""

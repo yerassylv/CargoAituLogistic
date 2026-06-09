@@ -3725,7 +3725,7 @@ function escapeHtmlContract(s) {
 async function downloadProtectedContractDocument(filePath, filename) {
     if (!filePath) return;
     try {
-        const baseUrl = REQUESTS_API_URL.replace(/\/api$/, "");
+        const baseUrl = REQUESTS_API_URL;
         const normalizedPath = String(filePath).replace(/^contracts\//, "");
         const encodedPath = normalizedPath.split("/").map(segment => encodeURIComponent(segment)).join("/");
         const response = await fetch(`${baseUrl}/contracts/${encodedPath}`, {
